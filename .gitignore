@@ -1,0 +1,22 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built by `go test -c`
+*.test
+
+# Output of the go coverage tool, produced by `go test -coverprofile`
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Environment variables (PENTING: jangan push kredensial DB)
+.env
