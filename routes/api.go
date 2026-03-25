@@ -11,6 +11,8 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	{
 		api.POST("/bookings", controllers.CreateBooking)
+		api.GET("/bookings", controllers.GetAllBookings)
+		api.GET("/bookings/:id", controllers.GetBookingByID)
 	}
 
 	return r

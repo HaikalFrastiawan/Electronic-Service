@@ -40,3 +40,15 @@ func TestCreateBookingHandler(t *testing.T) {
 	// 5. Assertion (Pengecekan hasil)
 	assert.Equal(t, http.StatusCreated, w.Code)
 }
+
+func TestGetAllBookingsHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	r.GET("/api/bookings", GetAllBookings)
+
+	req, _ := http.NewRequest("GET", "/api/bookings", nil)
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+}
