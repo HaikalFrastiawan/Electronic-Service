@@ -1,18 +1,16 @@
 package main
 
 import (
+	"booking-service/models"
 	"booking-service/config"
-	"github.com/gin-gonic/gin"
+	"booking-service/routes"
 )
 
 func main() {
 	
 	config.ConnectDatabase()
-	r := gin.Default()
+	config.DB.AutoMigrate(&models.Booking{})
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "Server & DB Aktif!"})
-	})
-
+	r := routes.SetupRouter()
 	r.Run(":8080")
 }
