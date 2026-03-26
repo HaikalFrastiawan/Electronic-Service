@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// LoggerMiddleware mencatat setiap request: method, path, status, dan latency
+// LoggerMiddleware logs method, path, status, and latency for each request.
 func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -16,17 +16,12 @@ func LoggerMiddleware() gin.HandlerFunc {
 
 		c.Next()
 
-		latency := time.Since(start)
-		status := c.Writer.Status()
-		clientIP := c.ClientIP()
-
 		fmt.Printf("[BOOKING-API] %s | %d | %s | %s %s\n",
 			start.Format("2006/01/02 - 15:04:05"),
-			status,
-			latency,
+			c.Writer.Status(),
+			time.Since(start),
 			method,
 			path,
 		)
-		_ = clientIP
 	}
 }

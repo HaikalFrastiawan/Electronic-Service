@@ -8,32 +8,32 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateTechnician menyimpan teknisi baru
+// CreateTechnician saves a new technician record.
 func CreateTechnician(input *models.Technician) error {
 	return config.DB.Create(input).Error
 }
 
-// GetAllTechnicians mengambil semua teknisi
+// GetAllTechnicians retrieves all technician records.
 func GetAllTechnicians() ([]models.Technician, error) {
 	var technicians []models.Technician
 	err := config.DB.Find(&technicians).Error
 	return technicians, err
 }
 
-// GetTechnicianByID mengambil satu teknisi berdasarkan ID
+// GetTechnicianByID retrieves a single technician by ID.
 func GetTechnicianByID(id string) (*models.Technician, error) {
 	var technician models.Technician
 	err := config.DB.First(&technician, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("teknisi tidak ditemukan")
+			return nil, errors.New("technician not found")
 		}
 		return nil, err
 	}
 	return &technician, nil
 }
 
-// UpdateTechnician memperbarui data teknisi
+// UpdateTechnician updates an existing technician record.
 func UpdateTechnician(id string, input *models.Technician) (*models.Technician, error) {
 	technician, err := GetTechnicianByID(id)
 	if err != nil {
@@ -45,7 +45,7 @@ func UpdateTechnician(id string, input *models.Technician) (*models.Technician, 
 	return technician, nil
 }
 
-// DeleteTechnician menghapus teknisi berdasarkan ID
+// DeleteTechnician removes a technician record by ID.
 func DeleteTechnician(id string) error {
 	technician, err := GetTechnicianByID(id)
 	if err != nil {

@@ -12,33 +12,36 @@ import (
 )
 
 func main() {
-	// Load .env file
 	if err := godotenv.Load(); err != nil {
-		log.Println("Peringatan: File .env tidak ditemukan, menggunakan environment variable sistem")
+		log.Println("Warning: .env not found, using system environment variables")
 	}
 
-	// Koneksi ke database
 	config.ConnectDatabase()
 
-	// Auto migrate semua model
-	err := config.DB.AutoMigrate(
+	// Drop bookings table to reapply schema (dev only — remove after first clean migration)
+	if config.DB.Migrator().HasTable(&models.Booking{}) {
+		if err := config.DB.Migrator().DropTable(&models.Booking{}); err != nil {
+			log.Fatal("Failed to drop bookings table:", err)
+		}
+		log.Println("Bookings table dropped for re-migration.")
+	}
+
+	if err := config.DB.AutoMigrate(
 		&models.User{},
 		&models.Customer{},
 		&models.Technician{},
 		&models.Booking{},
-	)
-	if err != nil {
-		log.Fatal("AutoMigrate gagal: ", err)
+	); err != nil {
+		log.Fatal("AutoMigrate failed:", err)
 	}
-	fmt.Println("AutoMigrate berhasil!")
+	fmt.Println("AutoMigrate successful!")
 
-	// Setup dan jalankan server
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	r := routes.SetupRouter()
-	fmt.Printf("Server berjalan di port %s...\n", port)
+	fmt.Printf("Server running on port %s...\n", port)
 	r.Run(":" + port)
 }

@@ -8,43 +8,42 @@ import (
 	"gorm.io/gorm"
 )
 
-// PreloadBooking memuat relasi Customer dan Technician ke struct booking
+// PreloadBooking loads Customer and Technician relations into the booking struct.
 func PreloadBooking(booking *models.Booking) {
 	config.DB.Preload("Customer").Preload("Technician").First(booking, booking.ID)
 }
 
-// CreateBooking menyimpan data booking baru
+// CreateBooking saves a new booking record.
 func CreateBooking(input *models.Booking) error {
-	// Pastikan customer ada
 	var customer models.Customer
 	if err := config.DB.First(&customer, input.CustomerID).Error; err != nil {
-		return errors.New("customer tidak ditemukan")
+		return errors.New("customer not found")
 	}
 
 	return config.DB.Create(input).Error
 }
 
-// GetAllBookings mengambil semua booking beserta relasi Customer & Technician
+// GetAllBookings retrieves all bookings with relations.
 func GetAllBookings() ([]models.Booking, error) {
 	var bookings []models.Booking
 	err := config.DB.Preload("Customer").Preload("Technician").Find(&bookings).Error
 	return bookings, err
 }
 
-// GetBookingByID mengambil satu booking berdasarkan ID
+// GetBookingByID retrieves a single booking by ID.
 func GetBookingByID(id string) (*models.Booking, error) {
 	var booking models.Booking
 	err := config.DB.Preload("Customer").Preload("Technician").First(&booking, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("booking tidak ditemukan")
+			return nil, errors.New("booking not found")
 		}
 		return nil, err
 	}
 	return &booking, nil
 }
 
-// UpdateBooking memperbarui data booking berdasarkan ID
+// UpdateBooking updates an existing booking record.
 func UpdateBooking(id string, input *models.Booking) (*models.Booking, error) {
 	booking, err := GetBookingByID(id)
 	if err != nil {
@@ -55,12 +54,11 @@ func UpdateBooking(id string, input *models.Booking) (*models.Booking, error) {
 		return nil, err
 	}
 
-	// Reload dengan relasi
 	config.DB.Preload("Customer").Preload("Technician").First(booking, booking.ID)
 	return booking, nil
 }
 
-// UpdateBookingStatus mengubah hanya status booking
+// UpdateBookingStatus updates the status of a specific booking.
 func UpdateBookingStatus(id string, status string) (*models.Booking, error) {
 	validStatuses := map[string]bool{
 		"pending":     true,
@@ -69,7 +67,7 @@ func UpdateBookingStatus(id string, status string) (*models.Booking, error) {
 		"cancelled":   true,
 	}
 	if !validStatuses[status] {
-		return nil, errors.New("status tidak valid. Gunakan: pending, in_progress, done, cancelled")
+		return nil, errors.New("invalid status. Use: pending, in_progress, done, or cancelled")
 	}
 
 	booking, err := GetBookingByID(id)
@@ -85,7 +83,7 @@ func UpdateBookingStatus(id string, status string) (*models.Booking, error) {
 	return booking, nil
 }
 
-// DeleteBooking menghapus booking berdasarkan ID
+// DeleteBooking removes a booking record by ID.
 func DeleteBooking(id string) error {
 	booking, err := GetBookingByID(id)
 	if err != nil {

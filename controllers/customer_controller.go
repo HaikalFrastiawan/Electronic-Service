@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateCustomer menambah pelanggan baru
+// CreateCustomer adds a new customer.
 func CreateCustomer(c *gin.Context) {
 	var input models.Customer
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -16,23 +16,23 @@ func CreateCustomer(c *gin.Context) {
 		return
 	}
 	if err := services.CreateCustomer(&input); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan customer: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save customer: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Customer berhasil ditambahkan", "data": input})
+	c.JSON(http.StatusCreated, gin.H{"message": "Customer added successfully", "data": input})
 }
 
-// GetAllCustomers mengambil semua pelanggan
+// GetAllCustomers retrieves all customers.
 func GetAllCustomers(c *gin.Context) {
 	customers, err := services.GetAllCustomers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data customer"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve customer data"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": customers})
 }
 
-// GetCustomerByID mengambil satu pelanggan berdasarkan ID
+// GetCustomerByID retrieves a single customer by ID.
 func GetCustomerByID(c *gin.Context) {
 	id := c.Param("id")
 	customer, err := services.GetCustomerByID(id)
@@ -43,7 +43,7 @@ func GetCustomerByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": customer})
 }
 
-// UpdateCustomer memperbarui data pelanggan
+// UpdateCustomer updates customer data.
 func UpdateCustomer(c *gin.Context) {
 	id := c.Param("id")
 	var input models.Customer
@@ -56,15 +56,15 @@ func UpdateCustomer(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Customer berhasil diupdate", "data": customer})
+	c.JSON(http.StatusOK, gin.H{"message": "Customer updated successfully", "data": customer})
 }
 
-// DeleteCustomer menghapus pelanggan berdasarkan ID
+// DeleteCustomer deletes a customer by ID.
 func DeleteCustomer(c *gin.Context) {
 	id := c.Param("id")
 	if err := services.DeleteCustomer(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Customer berhasil dihapus"})
+	c.JSON(http.StatusOK, gin.H{"message": "Customer deleted successfully"})
 }

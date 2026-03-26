@@ -11,6 +11,7 @@ import (
 
 var DB *gorm.DB
 
+// ConnectDatabase initializes the PostgreSQL connection via GORM.
 func ConnectDatabase() {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta",
@@ -23,9 +24,9 @@ func ConnectDatabase() {
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Gagal terhubung ke database: ", err)
+		log.Fatal("Failed to connect to database:", err)
 	}
 
-	fmt.Println("Berhasil terkoneksi ke Database!")
+	fmt.Println("Database connected!")
 	DB = database
 }

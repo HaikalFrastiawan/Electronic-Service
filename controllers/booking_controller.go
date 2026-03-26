@@ -8,36 +8,54 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateBooking membuat booking servis baru
+type BookingInput struct {
+	CustomerID       uint    `json:"customer_id" binding:"required"`
+	TechnicianID     *uint   `json:"technician_id"`
+	DeviceName       string  `json:"device_name" binding:"required"`
+	DeviceType       string  `json:"device_type"`
+	IssueDescription string  `json:"issue_description"`
+	EstimatedCost    float64 `json:"estimated_cost"`
+	Notes            string  `json:"notes"`
+}
+
+// CreateBooking creates a new service booking.
 func CreateBooking(c *gin.Context) {
-	var input models.Booking
+	var input BookingInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := services.CreateBooking(&input); err != nil {
+	booking := models.Booking{
+		CustomerID:       input.CustomerID,
+		TechnicianID:     input.TechnicianID,
+		DeviceName:       input.DeviceName,
+		DeviceType:       input.DeviceType,
+		IssueDescription: input.IssueDescription,
+		EstimatedCost:    input.EstimatedCost,
+		Notes:            input.Notes,
+	}
+	if err := services.CreateBooking(&booking); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Preload relasi sebelum kirim response
-	services.PreloadBooking(&input)
+	services.PreloadBooking(&booking)
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "Booking service berhasil dibuat!",
-		"data":    input,
+		"message": "Booking created successfully",
+		"data":    booking,
 	})
 }
 
-// GetAllBookings mengambil semua booking
+// GetAllBookings retrieves all bookings.
 func GetAllBookings(c *gin.Context) {
 	bookings, err := services.GetAllBookings()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve data"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": bookings})
 }
 
-// GetBookingByID mengambil satu booking berdasarkan ID
+// GetBookingByID retrieves a single booking by ID.
 func GetBookingByID(c *gin.Context) {
 	id := c.Param("id")
 	booking, err := services.GetBookingByID(id)
@@ -48,23 +66,32 @@ func GetBookingByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": booking})
 }
 
-// UpdateBooking memperbarui data booking
+// UpdateBooking updates booking data.
 func UpdateBooking(c *gin.Context) {
 	id := c.Param("id")
-	var input models.Booking
+	var input BookingInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	booking, err := services.UpdateBooking(id, &input)
+	update := models.Booking{
+		CustomerID:       input.CustomerID,
+		TechnicianID:     input.TechnicianID,
+		DeviceName:       input.DeviceName,
+		DeviceType:       input.DeviceType,
+		IssueDescription: input.IssueDescription,
+		EstimatedCost:    input.EstimatedCost,
+		Notes:            input.Notes,
+	}
+	booking, err := services.UpdateBooking(id, &update)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Booking berhasil diupdate", "data": booking})
+	c.JSON(http.StatusOK, gin.H{"message": "Booking updated successfully", "data": booking})
 }
 
-// UpdateBookingStatus mengubah hanya status booking
+// UpdateBookingStatus updates the status of a booking.
 func UpdateBookingStatus(c *gin.Context) {
 	id := c.Param("id")
 	var input struct {
@@ -79,15 +106,15 @@ func UpdateBookingStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Status booking berhasil diupdate", "data": booking})
+	c.JSON(http.StatusOK, gin.H{"message": "Booking status updated successfully", "data": booking})
 }
 
-// DeleteBooking menghapus booking berdasarkan ID
+// DeleteBooking deletes a booking by ID.
 func DeleteBooking(c *gin.Context) {
 	id := c.Param("id")
 	if err := services.DeleteBooking(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Booking berhasil dihapus"})
+	c.JSON(http.StatusOK, gin.H{"message": "Booking deleted successfully"})
 }

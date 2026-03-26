@@ -7,27 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SetupRouter configures the API routes and global middleware.
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Global Middleware
 	r.Use(middleware.CorsMiddleware())
 	r.Use(middleware.LoggerMiddleware())
 
 	api := r.Group("/api")
 
-	// =====================
-	// Public Routes (Tanpa Auth)
-	// =====================
+	// Public Auth Routes
 	auth := api.Group("/auth")
 	{
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
 	}
 
-	// =====================
-	// Protected Routes (Butuh JWT)
-	// =====================
+	// Protected API Routes
 	protected := api.Group("")
 	protected.Use(middleware.AuthMiddleware())
 	{
