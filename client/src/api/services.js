@@ -9,6 +9,7 @@ export const bookingsAPI = {
   getAll: () => api.get('/bookings'),
   getById: (id) => api.get(`/bookings/${id}`),
   create: (data) => api.post('/bookings', data),
+  createPublic: (data) => api.post('/public/bookings', data),
   update: (id, data) => api.put(`/bookings/${id}`, data),
   updateStatus: (id, status) => api.patch(`/bookings/${id}/status`, { status }),
   delete: (id) => api.delete(`/bookings/${id}`),

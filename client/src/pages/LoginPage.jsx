@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { authAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { BoltIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 
@@ -20,7 +20,7 @@ export default function LoginPage() {
       const res = await authAPI.login({ email, password })
       login(res.data.token, res.data.user)
       toast.success(`Welcome back, ${res.data.user.name}!`)
-      navigate('/')
+      navigate('/dashboard')
     } catch (err) {
       toast.error(err.response?.data?.error || 'Authentication failed. Please check credentials.')
     } finally {
@@ -91,6 +91,12 @@ export default function LoginPage() {
                 'Sign In'
               )}
             </button>
+
+            <div className="text-center pt-2">
+              <Link to="/book" className="text-sm text-brand-400 hover:text-brand-300 font-medium transition-colors">
+                Need a repair? Click here to book a service
+              </Link>
+            </div>
           </form>
         </div>
 

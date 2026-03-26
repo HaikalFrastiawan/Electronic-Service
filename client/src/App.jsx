@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import AppLayout from './layouts/AppLayout'
 import LoginPage from './pages/LoginPage'
+import PublicBookingPage from './pages/PublicBookingPage'
+import LandingPage from './pages/LandingPage'
 import DashboardPage from './pages/DashboardPage'
 import BookingsPage from './pages/BookingsPage'
 import CustomersPage from './pages/CustomersPage'
@@ -12,9 +14,11 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/book" element={<PublicBookingPage />} />
           <Route element={<AppLayout />}>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/bookings" element={<BookingsPage />} />
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/technicians" element={<TechniciansPage />} />

@@ -2,16 +2,16 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   HomeIcon,
-  CalendarDaysIcon,
   UsersIcon,
   WrenchScrewdriverIcon,
   ArrowRightStartOnRectangleIcon,
   BoltIcon,
+  ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline'
 
 const navLinks = [
-  { to: '/', label: 'Dashboard', Icon: HomeIcon },
-  { to: '/bookings', label: 'Bookings', Icon: CalendarDaysIcon },
+  { to: '/dashboard', label: 'Dashboard', Icon: HomeIcon },
+  { to: '/bookings', label: 'Bookings', Icon: ClipboardDocumentListIcon },
   { to: '/customers', label: 'Customers', Icon: UsersIcon },
   { to: '/technicians', label: 'Technicians', Icon: WrenchScrewdriverIcon },
 ]
@@ -34,7 +34,7 @@ export default function Sidebar() {
         </div>
         <div>
           <p className="font-bold text-sm text-white leading-none">ElektroServ</p>
-          <p className="text-xs text-slate-500 mt-0.5">Booking System</p>
+          <p className="text-xs text-slate-500 mt-0.5">Management Portal</p>
         </div>
       </div>
 
@@ -44,7 +44,6 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                 isActive
@@ -61,13 +60,20 @@ export default function Sidebar() {
 
       {/* User Session Info */}
       <div className="px-3 py-4 border-t border-slate-800">
-        <div className="px-3 py-2 mb-2">
-          <p className="text-sm font-semibold text-slate-200 truncate">{user?.name}</p>
-          <p className="text-xs text-slate-500 truncate">{user?.email}</p>
-          <span className="badge bg-brand-900 text-brand-400 mt-1">{user?.role}</span>
+        <div className="flex flex-col gap-2 px-3 py-2 mb-4">
+          <div>
+            <p className="text-sm font-semibold text-slate-200 truncate">{user?.name}</p>
+            <p className="text-[10px] text-slate-500 truncate uppercase tracking-wider">{user?.email}</p>
+          </div>
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-brand-500/10 text-brand-400 border border-brand-500/20 uppercase w-fit">
+            {user?.role}
+          </span>
         </div>
-        <button onClick={handleLogout} className="btn-ghost w-full justify-start">
-          <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
+        <button 
+          onClick={handleLogout} 
+          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all group"
+        >
+          <ArrowRightStartOnRectangleIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
           Logout
         </button>
       </div>

@@ -23,6 +23,9 @@ func SetupRouter() *gin.Engine {
 		auth.POST("/login", controllers.Login)
 	}
 
+	// Public Customer Routes
+	api.POST("/public/bookings", controllers.PublicCreateBooking)
+
 	// Protected API Routes
 	protected := api.Group("")
 	protected.Use(middleware.AuthMiddleware())

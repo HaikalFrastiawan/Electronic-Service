@@ -77,6 +77,7 @@ cd booking-service-elektronik
    ```bash
    npm run dev
    ```
+   (Normally accessible at `http://localhost:5173` or `5174` if the first port is occupied)
 
 ## 📁 Project Structure
 

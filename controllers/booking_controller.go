@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"booking-service/config"
 	"booking-service/models"
 	"booking-service/services"
 	"net/http"
@@ -117,4 +118,61 @@ func DeleteBooking(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Booking deleted successfully"})
+}
+
+// PublicBookingInput is the DTO for customer-initiated bookings.
+type PublicBookingInput struct {
+	CustomerName     string `json:"customer_name" binding:"required"`
+	CustomerEmail    string `json:"customer_email" binding:"required,email"`
+	CustomerPhone    string `json:"customer_phone" binding:"required"`
+	CustomerAddress  string `json:"customer_address"`
+	DeviceName       string `json:"device_name" binding:"required"`
+	DeviceType       string `json:"device_type"`
+	IssueDescription string `json:"issue_description"`
+}
+
+// PublicCreateBooking handles bookings from unauthenticated customers.
+func PublicCreateBooking(c *gin.Context) {
+	var input PublicBookingInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 1. Find or Create Customer
+	var customer models.Customer
+	config.DB.Where("email = ?", input.CustomerEmail).First(&customer)
+
+	if customer.ID == 0 {
+		customer = models.Customer{
+			Name:    input.CustomerName,
+			Email:   input.CustomerEmail,
+			Phone:   input.CustomerPhone,
+			Address: input.CustomerAddress,
+		}
+		if err := config.DB.Create(&customer).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create customer profile"})
+			return
+		}
+	}
+
+	// 2. Create Booking
+	booking := models.Booking{
+		CustomerID:       customer.ID,
+		DeviceName:       input.DeviceName,
+		DeviceType:       input.DeviceType,
+		IssueDescription: input.IssueDescription,
+		Status:           "pending",
+	}
+
+	if err := services.CreateBooking(&booking); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to submit booking"})
+		return
+	}
+
+	services.PreloadBooking(&booking)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Service request submitted successfully!",
+		"data":    booking,
+	})
 }
