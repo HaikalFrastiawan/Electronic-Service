@@ -2,8 +2,6 @@
 
 ElektroServ is a modern, full-stack management system designed for electronic repair shops. It streamlines the lifecycle of service records, from customer registration and technician assignment to status tracking and completion.
 
-![Login Page](file:///C:/Users/ASUS/.gemini/antigravity/brain/b1bc9c7b-863c-42c0-87ab-ed1b0471bea5/login_page_full_1774564938318.png)
-
 ## 🚀 Tech Stack
 
 ### Backend

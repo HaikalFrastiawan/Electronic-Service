@@ -3,6 +3,7 @@ package controllers
 import (
 	"booking-service/config"
 	"booking-service/models"
+	"booking-service/utils"
 	"net/http"
 	"os"
 	"time"
@@ -57,14 +58,11 @@ func Register(c *gin.Context) {
 	}
 
 	if err := config.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create account"})
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create account")
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Registration successful",
-		"data":    user,
-	})
+	utils.JSONResponse(c, http.StatusCreated, "Registration successful", user)
 }
 
 // Login validates credentials and returns a JWT token.
@@ -96,13 +94,12 @@ func Login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to generate token")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Login successful",
-		"token":   tokenString,
-		"user":    user,
+	utils.JSONResponse(c, http.StatusOK, "Login successful", gin.H{
+		"token": tokenString,
+		"user":  user,
 	})
 }

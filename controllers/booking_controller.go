@@ -4,6 +4,7 @@ import (
 	"booking-service/config"
 	"booking-service/models"
 	"booking-service/services"
+	"booking-service/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ type BookingInput struct {
 func CreateBooking(c *gin.Context) {
 	var input BookingInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 	booking := models.Booking{
@@ -36,24 +37,21 @@ func CreateBooking(c *gin.Context) {
 		Notes:            input.Notes,
 	}
 	if err := services.CreateBooking(&booking); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create booking")
 		return
 	}
 	services.PreloadBooking(&booking)
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Booking created successfully",
-		"data":    booking,
-	})
+	utils.JSONResponse(c, http.StatusCreated, "Booking created successfully", booking)
 }
 
 // GetAllBookings retrieves all bookings.
 func GetAllBookings(c *gin.Context) {
 	bookings, err := services.GetAllBookings()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve data"})
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve data")
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": bookings})
+	utils.JSONResponse(c, http.StatusOK, "Bookings retrieved", bookings)
 }
 
 // GetBookingByID retrieves a single booking by ID.
@@ -61,10 +59,10 @@ func GetBookingByID(c *gin.Context) {
 	id := c.Param("id")
 	booking, err := services.GetBookingByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": booking})
+	utils.JSONResponse(c, http.StatusOK, "Booking found", booking)
 }
 
 // UpdateBooking updates booking data.
@@ -86,10 +84,10 @@ func UpdateBooking(c *gin.Context) {
 	}
 	booking, err := services.UpdateBooking(id, &update)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Booking updated successfully", "data": booking})
+	utils.JSONResponse(c, http.StatusOK, "Booking updated successfully", booking)
 }
 
 // UpdateBookingStatus updates the status of a booking.
@@ -104,20 +102,20 @@ func UpdateBookingStatus(c *gin.Context) {
 	}
 	booking, err := services.UpdateBookingStatus(id, input.Status)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Booking status updated successfully", "data": booking})
+	utils.JSONResponse(c, http.StatusOK, "Booking status updated successfully", booking)
 }
 
 // DeleteBooking deletes a booking by ID.
 func DeleteBooking(c *gin.Context) {
 	id := c.Param("id")
 	if err := services.DeleteBooking(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Booking deleted successfully"})
+	utils.JSONResponse(c, http.StatusOK, "Booking deleted successfully", nil)
 }
 
 // PublicBookingInput is the DTO for customer-initiated bookings.
@@ -135,7 +133,7 @@ type PublicBookingInput struct {
 func PublicCreateBooking(c *gin.Context) {
 	var input PublicBookingInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -151,7 +149,7 @@ func PublicCreateBooking(c *gin.Context) {
 			Address: input.CustomerAddress,
 		}
 		if err := config.DB.Create(&customer).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create customer profile"})
+			utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create customer profile")
 			return
 		}
 	}
@@ -162,17 +160,25 @@ func PublicCreateBooking(c *gin.Context) {
 		DeviceName:       input.DeviceName,
 		DeviceType:       input.DeviceType,
 		IssueDescription: input.IssueDescription,
-		Status:           "pending",
+		Status:           "Pending",
 	}
 
 	if err := services.CreateBooking(&booking); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to submit booking"})
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to submit booking")
 		return
 	}
 
 	services.PreloadBooking(&booking)
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Service request submitted successfully!",
-		"data":    booking,
-	})
+	utils.JSONResponse(c, http.StatusCreated, "Service request submitted successfully!", booking)
+}
+
+// TrackBooking allows customers to check booking status by tracking ID.
+func TrackBooking(c *gin.Context) {
+	trackingID := c.Param("tracking_id")
+	var booking models.Booking
+	if err := config.DB.Preload("Customer").Preload("Technician").Where("tracking_id = ?", trackingID).First(&booking).Error; err != nil {
+		utils.ErrorResponse(c, http.StatusNotFound, "Booking not found with the provided Tracking ID")
+		return
+	}
+	utils.JSONResponse(c, http.StatusOK, "Booking found", booking)
 }
