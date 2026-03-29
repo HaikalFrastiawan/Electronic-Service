@@ -13,6 +13,7 @@ import SparepartsPage from './pages/SparepartsPage'
 import CustomerDashboardPage from './pages/CustomerDashboardPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
+import { Toaster } from 'react-hot-toast'
 
 /**
  * DashboardRedirect handles the generic /dashboard route and sends 
@@ -55,6 +56,32 @@ export default function App() {
           
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: '#0f172a',
+              color: '#f8fafc',
+              border: '1px solid #1e293b',
+              borderRadius: '16px',
+              fontSize: '14px',
+              padding: '12px 20px',
+              boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#f8fafc',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#f8fafc',
+              },
+            },
+          }}
+        />
       </BrowserRouter>
     </AuthProvider>
   )
