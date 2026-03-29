@@ -27,7 +27,7 @@ func ConnectDatabase() {
 
 	password := os.Getenv("DB_PASSWORD")
 	if password == "" {
-		password = "your_password"
+		password = "1125"
 	}
 
 	dbname := os.Getenv("DB_NAME")

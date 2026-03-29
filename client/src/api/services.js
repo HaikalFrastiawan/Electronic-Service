@@ -13,6 +13,7 @@ export const bookingsAPI = {
   update: (id, data) => api.put(`/bookings/${id}`, data),
   updateStatus: (id, status) => api.patch(`/bookings/${id}/status`, { status }),
   delete: (id) => api.delete(`/bookings/${id}`),
+  addItem: (bookingId, data) => api.post(`/bookings/${bookingId}/items`, data),
 }
 
 export const customersAPI = {
@@ -30,3 +31,16 @@ export const techniciansAPI = {
   update: (id, data) => api.put(`/technicians/${id}`, data),
   delete: (id) => api.delete(`/technicians/${id}`),
 }
+
+export const sparepartsAPI = {
+  getAll: () => api.get('/spareparts'),
+  getById: (id) => api.get(`/spareparts/${id}`),
+  create: (data) => api.post('/spareparts', data),
+  update: (id, data) => api.put(`/spareparts/${id}`, data),
+  delete: (id) => api.delete(`/spareparts/${id}`),
+}
+
+export const dashboardAPI = {
+  getStats: () => api.get('/admin/dashboard-stats'),
+}
+

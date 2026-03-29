@@ -6,9 +6,9 @@ import Modal from '../components/Modal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import StatusBadge from '../components/StatusBadge'
 import LoadingSpinner from '../components/LoadingSpinner'
-import { PlusIcon, PencilIcon, TrashIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, ChevronUpDownIcon, CubeIcon } from '@heroicons/react/24/outline'
 
-const STATUSES = ['pending', 'in_progress', 'done', 'cancelled']
+const STATUSES = ['Pending', 'Waiting Parts', 'In Repair', 'Ready for Pickup', 'Completed', 'Cancelled']
 
 function BookingForm({ onSubmit, defaultValues, customers, technicians, loading }) {
   const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues })
@@ -41,6 +41,16 @@ function BookingForm({ onSubmit, defaultValues, customers, technicians, loading 
         <div>
           <label className="label">Device Type</label>
           <input className="input" placeholder="e.g. Television" {...register('device_type')} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="label">Serial Number</label>
+          <input className="input" placeholder="e.g. SN-123456789" {...register('serial_number')} />
+        </div>
+        <div>
+          <label className="label">Initial Photo URL</label>
+          <input className="input" placeholder="https://..." {...register('initial_photo')} />
         </div>
       </div>
       <div>
@@ -76,7 +86,16 @@ export default function BookingsPage() {
   const [modal, setModal] = useState({ open: false, editing: null })
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null })
   const [statusModal, setStatusModal] = useState({ open: false, id: null, current: '' })
+  const [addPartModal, setAddPartModal] = useState({ open: false, bookingId: null })
+  const [spareparts, setSpareparts] = useState([])
   const [search, setSearch] = useState('')
+
+  const fetchSpareparts = async () => {
+    try {
+      const res = await import('../api/services').then(m => m.sparepartsAPI.getAll())
+      setSpareparts(res.data.data || [])
+    } catch {}
+  }
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -85,6 +104,7 @@ export default function BookingsPage() {
       setBookings(b.data.data || [])
       setCustomers(c.data.data || [])
       setTechnicians(t.data.data || [])
+      fetchSpareparts()
     } finally {
       setLoading(false)
     }
@@ -134,6 +154,29 @@ export default function BookingsPage() {
       fetchData()
     } catch {
       toast.error('Failed to update status')
+    }
+  }
+
+  const handleAddPartSubmit = async (e) => {
+    e.preventDefault()
+    const form = e.target
+    const sparepartId = parseInt(form.sparepart_id.value)
+    const quantity = parseInt(form.quantity.value)
+    
+    setSaving(true)
+    try {
+      await bookingsAPI.addItem(addPartModal.bookingId, {
+        booking_id: addPartModal.bookingId,
+        sparepart_id: sparepartId,
+        quantity,
+      })
+      toast.success('Sparepart added to booking')
+      setAddPartModal({ open: false, bookingId: null })
+      fetchData()
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to add sparepart. Check stock.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -197,10 +240,13 @@ export default function BookingsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <button className="btn-ghost p-1.5 rounded-lg" onClick={() => setModal({ open: true, editing: b })}>
+                        <button className="btn-ghost p-1.5 rounded-lg text-emerald-400 hover:text-emerald-300" onClick={() => setAddPartModal({ open: true, bookingId: b.id })} title="Add Sparepart">
+                          <CubeIcon className="w-4 h-4" />
+                        </button>
+                        <button className="btn-ghost p-1.5 rounded-lg" onClick={() => setModal({ open: true, editing: b })} title="Edit Booking">
                           <PencilIcon className="w-4 h-4" />
                         </button>
-                        <button className="btn-ghost p-1.5 rounded-lg text-red-400 hover:text-red-300" onClick={() => setDeleteDialog({ open: true, id: b.id })}>
+                        <button className="btn-ghost p-1.5 rounded-lg text-red-400 hover:text-red-300" onClick={() => setDeleteDialog({ open: true, id: b.id })} title="Delete Booking">
                           <TrashIcon className="w-4 h-4" />
                         </button>
                       </div>
@@ -247,10 +293,41 @@ export default function BookingsPage() {
                   : 'text-slate-300 hover:bg-slate-800'
               }`}
             >
-              {s === 'in_progress' ? 'In Progress' : s.charAt(0).toUpperCase() + s.slice(1)}
+              {s}
             </button>
           ))}
         </div>
+      </Modal>
+
+      {/* Add Part Modal */}
+      <Modal
+        isOpen={addPartModal.open}
+        onClose={() => setAddPartModal({ open: false, bookingId: null })}
+        title="Add Sparepart to Booking"
+        size="md"
+      >
+        <form onSubmit={handleAddPartSubmit} className="space-y-4">
+          <div>
+            <label className="label">Select Sparepart</label>
+            <select name="sparepart_id" className="input" required>
+              <option value="">— Choose Part —</option>
+              {spareparts.map((p) => (
+                <option key={p.id} value={p.id} disabled={p.stock < 1}>
+                  {p.name} (Stock: {p.stock}) - Rp {p.price.toLocaleString('id-ID')}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Quantity</label>
+            <input name="quantity" type="number" min="1" defaultValue="1" className="input" required />
+          </div>
+          <div className="flex justify-end pt-2">
+            <button type="submit" className="btn-primary" disabled={saving}>
+              {saving ? 'Adding...' : 'Add to Bill'}
+            </button>
+          </div>
+        </form>
       </Modal>
 
       {/* Deletion Dialog */}

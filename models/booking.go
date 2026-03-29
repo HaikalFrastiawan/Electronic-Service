@@ -20,9 +20,12 @@ type Booking struct {
 	IssueDescription string      `gorm:"type:text" json:"issue_description"`
 	EstimatedCost    float64     `gorm:"default:0" json:"estimated_cost"`
 	Notes            string      `gorm:"type:text" json:"notes"`
-	Status           string      `gorm:"type:varchar(20);default:'Pending'" json:"status"` // Pending | In_Progress | Completed | Cancelled
-	CreatedAt        time.Time   `json:"created_at"`
-	UpdatedAt        time.Time   `json:"updated_at"`
+	Status           string        `gorm:"type:varchar(50);default:'Pending'" json:"status"` // Pending | Waiting Parts | In Repair | Ready for Pickup | Completed | Cancelled
+	SerialNumber     string        `gorm:"type:varchar(100)" json:"serial_number"`
+	InitialPhoto     string        `gorm:"type:text" json:"initial_photo"`
+	BookingItems     []BookingItem `gorm:"foreignKey:BookingID" json:"items,omitempty"`
+	CreatedAt        time.Time     `json:"created_at"`
+	UpdatedAt        time.Time     `json:"updated_at"`
 }
 
 // BeforeCreate is a GORM hook to generate a unique tracking ID

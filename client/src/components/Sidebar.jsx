@@ -7,6 +7,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   BoltIcon,
   ClipboardDocumentListIcon,
+  CubeIcon,
 } from '@heroicons/react/24/outline'
 
 const navLinks = [
@@ -14,6 +15,7 @@ const navLinks = [
   { to: '/bookings', label: 'Bookings', Icon: ClipboardDocumentListIcon },
   { to: '/customers', label: 'Customers', Icon: UsersIcon },
   { to: '/technicians', label: 'Technicians', Icon: WrenchScrewdriverIcon },
+  { to: '/spareparts', label: 'Spareparts', Icon: CubeIcon },
 ]
 
 export default function Sidebar() {

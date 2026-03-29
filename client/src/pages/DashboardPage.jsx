@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react'
-import { bookingsAPI, customersAPI, techniciansAPI } from '../api/services'
+import { dashboardAPI, techniciansAPI } from '../api/services'
 import {
   CalendarDaysIcon,
   UsersIcon,
   WrenchScrewdriverIcon,
   ClockIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import LoadingSpinner from '../components/LoadingSpinner'
-import StatusBadge from '../components/StatusBadge'
-import { Link } from 'react-router-dom'
 
 function StatCard({ icon: Icon, label, value, colorClass, bgClass }) {
   return (
@@ -29,21 +26,18 @@ function StatCard({ icon: Icon, label, value, colorClass, bgClass }) {
 
 // DashboardPage provides an overview of key system metrics and recent activities.
 export default function DashboardPage() {
-  const [bookings, setBookings] = useState([])
-  const [customers, setCustomers] = useState([])
+  const [stats, setStats] = useState({ total_customers: 0, total_revenue: 0, service_status: [] })
   const [technicians, setTechnicians] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [b, c, t] = await Promise.all([
-          bookingsAPI.getAll(),
-          customersAPI.getAll(),
+        const [d, t] = await Promise.all([
+          dashboardAPI.getStats(),
           techniciansAPI.getAll(),
         ])
-        setBookings(b.data.data || [])
-        setCustomers(c.data.data || [])
+        setStats(d.data.data || { total_customers: 0, total_revenue: 0, service_status: [] })
         setTechnicians(t.data.data || [])
       } finally {
         setLoading(false)
@@ -54,13 +48,21 @@ export default function DashboardPage() {
 
   if (loading) return <LoadingSpinner />
 
-  const pending = bookings.filter((b) => b.status === 'pending').length
-  const inProgress = bookings.filter((b) => b.status === 'in_progress').length
-  const done = bookings.filter((b) => b.status === 'done').length
-  const cancelled = bookings.filter((b) => b.status === 'cancelled').length
+  const getStatusCount = (targetStatus) => {
+    const s = stats.service_status?.find(item => item.status.toLowerCase() === targetStatus.toLowerCase())
+    return s ? s.count : 0
+  }
+
+  const pending = getStatusCount('Pending')
+  const inProgress = getStatusCount('In Repair')
+  const done = getStatusCount('Completed')
+  const cancelled = getStatusCount('Cancelled')
+  const waitingParts = getStatusCount('Waiting Parts')
+  const readyPickup = getStatusCount('Ready for Pickup')
   const availableTechs = technicians.filter((t) => t.is_available).length
 
-  const recentBookings = [...bookings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5)
+  // Generate total bookings dynamically from the status counts array
+  const totalBookings = stats.service_status?.reduce((acc, curr) => acc + curr.count, 0) || 0
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
@@ -75,14 +77,14 @@ export default function DashboardPage() {
         <StatCard
           icon={CalendarDaysIcon}
           label="Total Bookings"
-          value={bookings.length}
+          value={totalBookings}
           colorClass="text-brand-400"
           bgClass="bg-brand-900/50"
         />
         <StatCard
           icon={UsersIcon}
           label="Total Customers"
-          value={customers.length}
+          value={stats.total_customers}
           colorClass="text-purple-400"
           bgClass="bg-purple-900/50"
         />
@@ -103,12 +105,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Operational Breakdown */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card p-5 flex items-center gap-3">
           <ArrowPathIcon className="w-5 h-5 text-blue-400" />
           <div>
             <p className="text-xl font-bold text-white">{inProgress}</p>
-            <p className="text-xs text-slate-400">In Progress</p>
+            <p className="text-xs text-slate-400">In Repair</p>
           </div>
         </div>
         <div className="card p-5 flex items-center gap-3">
@@ -119,35 +121,26 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="card p-5 flex items-center gap-3">
-          <XCircleIcon className="w-5 h-5 text-red-400" />
+          <ClockIcon className="w-5 h-5 text-yellow-400" />
           <div>
-            <p className="text-xl font-bold text-white">{cancelled}</p>
-            <p className="text-xs text-slate-400">Cancelled</p>
+            <p className="text-xl font-bold text-white">{waitingParts}</p>
+            <p className="text-xs text-slate-400">Waiting Parts</p>
+          </div>
+        </div>
+        <div className="card p-5 flex items-center gap-3">
+          <CalendarDaysIcon className="w-5 h-5 text-emerald-400" />
+          <div>
+            <p className="text-xl font-bold text-white">{readyPickup}</p>
+            <p className="text-xs text-slate-400">Ready Pickup</p>
           </div>
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div className="card">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-          <h2 className="font-semibold text-slate-100">Recent Bookings</h2>
-          <Link to="/bookings" className="text-xs text-brand-400 hover:text-brand-300">View All →</Link>
-        </div>
-        <div className="divide-y divide-slate-800">
-          {recentBookings.length === 0 ? (
-            <p className="px-6 py-8 text-center text-slate-500 text-sm">No recent activity detected</p>
-          ) : (
-            recentBookings.map((b) => (
-              <div key={b.id} className="px-6 py-4 flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-100 truncate">{b.device_name}</p>
-                  <p className="text-xs text-slate-500">{b.customer?.name ?? `Customer #${b.customer_id}`}</p>
-                </div>
-                <StatusBadge status={b.status} />
-              </div>
-            ))
-          )}
-        </div>
+      {/* Revenue Section */}
+      <div className="card p-6 border-l-4 border-brand-500 bg-gradient-to-r from-brand-900/20 to-transparent">
+        <h2 className="font-semibold text-slate-100 text-lg">Total Revenue (Completed Bookings)</h2>
+        <p className="text-4xl font-extrabold text-white mt-2">Rp {stats.total_revenue?.toLocaleString('id-ID')}</p>
+        <p className="text-xs text-slate-400 mt-2">Powered by itemized billing engine.</p>
       </div>
     </div>
   )

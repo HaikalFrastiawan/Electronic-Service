@@ -44,6 +44,9 @@ func SetupRouter() *gin.Engine {
 				bookings.PUT("/:id", controllers.UpdateBooking)
 				bookings.PATCH("/:id/status", controllers.UpdateBookingStatus)
 				bookings.DELETE("/:id", controllers.DeleteBooking)
+				
+				// Booking Items
+				bookings.POST("/:id/items", controllers.AddBookingItem)
 			}
 
 			// Customers
@@ -64,6 +67,22 @@ func SetupRouter() *gin.Engine {
 				technicians.GET("/:id", controllers.GetTechnicianByID)
 				technicians.PUT("/:id", controllers.UpdateTechnician)
 				technicians.DELETE("/:id", controllers.DeleteTechnician)
+			}
+
+			// Spareparts
+			spareparts := protected.Group("/spareparts")
+			{
+				spareparts.POST("", controllers.CreateSparepart)
+				spareparts.GET("", controllers.GetAllSpareparts)
+				spareparts.GET("/:id", controllers.GetSparepartByID)
+				spareparts.PUT("/:id", controllers.UpdateSparepart)
+				spareparts.DELETE("/:id", controllers.DeleteSparepart)
+			}
+
+			// Admin Dashboard
+			admin := protected.Group("/admin")
+			{
+				admin.GET("/dashboard-stats", controllers.GetDashboardStats)
 			}
 		}
 	}
