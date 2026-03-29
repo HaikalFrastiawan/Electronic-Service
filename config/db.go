@@ -15,6 +15,31 @@ var DB *gorm.DB
 // ConnectDatabase initializes the PostgreSQL connection via GORM.
 func ConnectDatabase() {
 
+	host := os.Getenv("DB_HOST")
+	if host == "" {
+		host = "localhost"
+	}
+
+	user := os.Getenv("DB_USER")
+	if user == "" {
+		user = "postgres"
+	}
+
+	password := os.Getenv("DB_PASSWORD")
+	if password == "" {
+		password = "your_password"
+	}
+
+	dbname := os.Getenv("DB_NAME")
+	if dbname == "" {
+		dbname = "booking_db"
+	}
+
+	port := os.Getenv("DB_PORT")
+	if port == "" {
+		port = "5432"
+	}
+
 	sslMode := os.Getenv("DB_SSLMODE")
 	if sslMode == "" {
 		sslMode = "disable" // Default for local dev
@@ -22,12 +47,7 @@ func ConnectDatabase() {
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=Asia/Jakarta",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
-		sslMode,
+		host, user, password, dbname, port, sslMode,
 	)
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

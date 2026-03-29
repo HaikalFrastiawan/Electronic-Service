@@ -18,7 +18,7 @@ import (
 
 func main() {
 	if err := godotenv.Load(); err != nil {
-		log.Println("Warning: .env not found, using system environment variables")
+		log.Println("Info: .env file not found, using default environment variables")
 	}
 
 	config.ConnectDatabase()

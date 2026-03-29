@@ -18,8 +18,9 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const res = await authAPI.login({ email, password })
-      login(res.data.token, res.data.user)
-      toast.success(`Welcome back, ${res.data.user.name}!`)
+      const { token, user } = res.data.data
+      login(token, user)
+      toast.success(`Welcome back, ${user.name}!`)
       navigate('/dashboard')
     } catch (err) {
       toast.error(err.response?.data?.error || 'Authentication failed. Please check credentials.')
