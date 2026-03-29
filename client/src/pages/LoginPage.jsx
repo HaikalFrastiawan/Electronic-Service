@@ -1,17 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { authAPI } from '../api/services'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { BoltIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import { BoltIcon, EnvelopeIcon, LockClosedIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 // LoginPage handles user authentication and session initialization.
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
+  const { login, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const redirectPath = user.role === 'admin' ? '/admin/dashboard' : '/customer/dashboard'
+      navigate(redirectPath, { replace: true })
+    }
+  }, [isAuthenticated, user, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -21,7 +29,13 @@ export default function LoginPage() {
       const { token, user } = res.data.data
       login(token, user)
       toast.success(`Welcome back, ${user.name}!`)
-      navigate('/dashboard')
+      
+      // Role-based redirect
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard')
+      } else {
+        navigate('/customer/dashboard')
+      }
     } catch (err) {
       toast.error(err.response?.data?.error || 'Authentication failed. Please check credentials.')
     } finally {
@@ -34,6 +48,9 @@ export default function LoginPage() {
       <div className="max-w-md w-full animate-in fade-in zoom-in duration-500">
         {/* Brand Header */}
         <div className="flex flex-col items-center gap-4 mb-8 text-center">
+          <Link to="/" className="absolute top-8 left-8 text-slate-500 hover:text-white flex items-center gap-2 text-sm transition-colors group">
+            <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Kembali ke Beranda
+          </Link>
           <div className="w-16 h-16 rounded-3xl bg-brand-600 flex items-center justify-center rotate-3 shadow-2xl shadow-brand-500/20">
             <BoltIcon className="w-10 h-10 text-white -rotate-3" />
           </div>
@@ -93,9 +110,16 @@ export default function LoginPage() {
               )}
             </button>
 
-            <div className="text-center pt-2">
-              <Link to="/book" className="text-sm text-brand-400 hover:text-brand-300 font-medium transition-colors">
-                Need a repair? Click here to book a service
+            <div className="text-center pt-2 space-y-4">
+              <div className="text-sm">
+                <span className="text-slate-500">Belum punya akun? </span>
+                <Link to="/register" className="text-brand-400 hover:text-brand-300 font-bold transition-colors">
+                  Daftar di sini
+                </Link>
+              </div>
+              
+              <Link to="/book" className="block text-xs text-slate-500 hover:text-brand-400 transition-colors">
+                Butuh perbaikan cepat? Klik di sini untuk booking langsung
               </Link>
             </div>
           </form>

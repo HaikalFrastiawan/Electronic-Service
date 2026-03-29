@@ -4,6 +4,7 @@ import (
 	"booking-service/config"
 	"booking-service/models"
 	"booking-service/utils"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -25,11 +26,12 @@ type LoginInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// Register creates a new user account.
+// Register creates a new customer user account.
 func Register(c *gin.Context) {
 	var input RegisterInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("[REGISTRATION] Binding Error: %v", err)
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -39,22 +41,12 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process password"})
-		return
-	}
-
-	role := input.Role
-	if role == "" {
-		role = "staff"
-	}
-
+	// Public registration defaults strictly to customer
 	user := models.User{
 		Name:     input.Name,
 		Email:    input.Email,
-		Password: string(hashedPassword),
-		Role:     role,
+		Password: input.Password,
+		Role:     "customer",
 	}
 
 	if err := config.DB.Create(&user).Error; err != nil {
@@ -62,14 +54,35 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	utils.JSONResponse(c, http.StatusCreated, "Registration successful", user)
+	// Generate JWT for auto-login after registration
+	claims := jwt.MapClaims{
+		"user_id": user.ID,
+		"name":    user.Name,
+		"email":   user.Email,
+		"role":    user.Role,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		// Even if token fails, user is created, but we return error for the flow
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Account created but failed to generate token")
+		return
+	}
+
+	utils.JSONResponse(c, http.StatusCreated, "Registration successful", gin.H{
+		"token": tokenString,
+		"user":  user,
+	})
 }
 
 // Login validates credentials and returns a JWT token.
 func Login(c *gin.Context) {
 	var input LoginInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("[LOGIN] Binding Error: %v", err)
+		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -86,6 +99,7 @@ func Login(c *gin.Context) {
 
 	claims := jwt.MapClaims{
 		"user_id": user.ID,
+		"name":    user.Name,
 		"email":   user.Email,
 		"role":    user.Role,
 		"exp":     time.Now().Add(24 * time.Hour).Unix(),

@@ -45,8 +45,8 @@ export default function PublicBookingPage() {
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-10">
-          <Link to="/login" className="self-start mb-6 text-slate-500 hover:text-white flex items-center gap-2 text-sm transition-colors">
-            <ArrowLeftIcon className="w-4 h-4" /> staff login
+          <Link to="/" className="self-start mb-6 text-slate-500 hover:text-white flex items-center gap-2 text-sm transition-colors">
+            <ArrowLeftIcon className="w-4 h-4" /> Kembali ke Beranda
           </Link>
           <div className="w-16 h-16 rounded-2xl bg-brand-600 flex items-center justify-center shadow-xl shadow-brand-500/20 mb-4">
             <BoltIcon className="w-10 h-10 text-white" />

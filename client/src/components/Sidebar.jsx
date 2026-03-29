@@ -8,14 +8,16 @@ import {
   BoltIcon,
   ClipboardDocumentListIcon,
   CubeIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline'
 
 const navLinks = [
-  { to: '/dashboard', label: 'Dashboard', Icon: HomeIcon },
+  { to: '/admin/dashboard', label: 'Dashboard', Icon: HomeIcon },
   { to: '/bookings', label: 'Bookings', Icon: ClipboardDocumentListIcon },
   { to: '/customers', label: 'Customers', Icon: UsersIcon },
   { to: '/technicians', label: 'Technicians', Icon: WrenchScrewdriverIcon },
   { to: '/spareparts', label: 'Spareparts', Icon: CubeIcon },
+  { to: '/customer/dashboard', label: 'Customer View', Icon: UserCircleIcon },
 ]
 
 export default function Sidebar() {
@@ -27,6 +29,24 @@ export default function Sidebar() {
     navigate('/login')
   }
 
+  // Filter links based on role
+  const filteredLinks = navLinks.filter(link => {
+    if (user?.role === 'admin') {
+      // Admins don't need 'Customer View' in their management sidebar
+      return link.to !== '/customer/dashboard'
+    }
+    // Customers only see a simplified dashboard
+    return link.to === '/customer/dashboard'
+  })
+
+  // Update labels for customer if needed
+  const displayLinks = filteredLinks.map(link => {
+    if (user?.role === 'customer' && link.to === '/customer/dashboard') {
+      return { ...link, label: 'Status Servis' }
+    }
+    return link
+  })
+
   return (
     <aside className="w-64 min-h-screen bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
       {/* Branding */}
@@ -36,13 +56,15 @@ export default function Sidebar() {
         </div>
         <div>
           <p className="font-bold text-sm text-white leading-none">ElektroServ</p>
-          <p className="text-xs text-slate-500 mt-0.5">Management Portal</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {user?.role === 'admin' ? 'Management Portal' : 'Customer Portal'}
+          </p>
         </div>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {navLinks.map(({ to, label, Icon }) => (
+        {displayLinks.map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}

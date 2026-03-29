@@ -61,13 +61,15 @@ func UpdateBooking(id string, input *models.Booking) (*models.Booking, error) {
 // UpdateBookingStatus updates the status of a specific booking.
 func UpdateBookingStatus(id string, status string) (*models.Booking, error) {
 	validStatuses := map[string]bool{
-		"pending":     true,
-		"in_progress": true,
-		"done":        true,
-		"cancelled":   true,
+		"Pending":          true,
+		"Waiting Parts":    true,
+		"In Repair":        true,
+		"Ready for Pickup": true,
+		"Completed":        true,
+		"Cancelled":        true,
 	}
 	if !validStatuses[status] {
-		return nil, errors.New("invalid status. Use: pending, in_progress, done, or cancelled")
+		return nil, errors.New("invalid status. Use: Pending, Waiting Parts, In Repair, Ready for Pickup, Completed, or Cancelled")
 	}
 
 	booking, err := GetBookingByID(id)

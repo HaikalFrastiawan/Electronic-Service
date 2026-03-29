@@ -54,6 +54,20 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("user_id", claims["user_id"])
 		c.Set("user_email", claims["email"])
 		c.Set("user_role", claims["role"])
+		c.Set("role", claims["role"]) // Based on user request
+		c.Next()
+	}
+}
+
+// AdminOnly limits access to specific endpoints to admin users only.
+func AdminOnly() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role, exists := c.Get("role")
+		if !exists || role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Akses Ditolak: Fitur ini hanya untuk Admin."})
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }

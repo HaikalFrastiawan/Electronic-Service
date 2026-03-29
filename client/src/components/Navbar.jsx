@@ -32,7 +32,7 @@ export default function Navbar() {
               </Link>
             ) : (
               <Link to="/login" className="text-sm font-semibold text-white hover:text-brand-400 transition-colors">
-                Staff Login
+                Dashboard
               </Link>
             )}
             <Link to="/book" className="hidden sm:block btn-primary py-2.5 px-6 text-sm font-bold shadow-xl shadow-brand-600/20 active:scale-95 transition-all">

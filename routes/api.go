@@ -17,72 +17,78 @@ func SetupRouter() *gin.Engine {
 
 	v1 := r.Group("/api/v1")
 	{
-		// Public Routes
-		public := v1.Group("/public")
-		{
-			public.POST("/bookings", controllers.PublicCreateBooking)
-			public.GET("/track/:tracking_id", controllers.TrackBooking) // New Tracking Route
-		}
-
-		// Auth Routes
+		// Auth Routes (Public)
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/register", controllers.Register)
 			auth.POST("/login", controllers.Login)
 		}
 
-		// Protected API Routes
+		// Public Info Routes
+		public := v1.Group("/public")
+		{
+			public.POST("/bookings", controllers.PublicCreateBooking)
+			public.GET("/track/:tracking_id", controllers.TrackBooking)
+		}
+
+		// Protected Routes
 		protected := v1.Group("")
 		protected.Use(middleware.AuthMiddleware())
 		{
-			// Bookings
-			bookings := protected.Group("/bookings")
-			{
-				bookings.POST("", controllers.CreateBooking)
-				bookings.GET("", controllers.GetAllBookings)
-				bookings.GET("/:id", controllers.GetBookingByID)
-				bookings.PUT("/:id", controllers.UpdateBooking)
-				bookings.PATCH("/:id/status", controllers.UpdateBookingStatus)
-				bookings.DELETE("/:id", controllers.DeleteBooking)
-				
-				// Booking Items
-				bookings.POST("/:id/items", controllers.AddBookingItem)
-			}
-
-			// Customers
-			customers := protected.Group("/customers")
-			{
-				customers.POST("", controllers.CreateCustomer)
-				customers.GET("", controllers.GetAllCustomers)
-				customers.GET("/:id", controllers.GetCustomerByID)
-				customers.PUT("/:id", controllers.UpdateCustomer)
-				customers.DELETE("/:id", controllers.DeleteCustomer)
-			}
-
-			// Technicians
-			technicians := protected.Group("/technicians")
-			{
-				technicians.POST("", controllers.CreateTechnician)
-				technicians.GET("", controllers.GetAllTechnicians)
-				technicians.GET("/:id", controllers.GetTechnicianByID)
-				technicians.PUT("/:id", controllers.UpdateTechnician)
-				technicians.DELETE("/:id", controllers.DeleteTechnician)
-			}
-
-			// Spareparts
-			spareparts := protected.Group("/spareparts")
-			{
-				spareparts.POST("", controllers.CreateSparepart)
-				spareparts.GET("", controllers.GetAllSpareparts)
-				spareparts.GET("/:id", controllers.GetSparepartByID)
-				spareparts.PUT("/:id", controllers.UpdateSparepart)
-				spareparts.DELETE("/:id", controllers.DeleteSparepart)
-			}
-
-			// Admin Dashboard
+			// Admin Routes (Protected by AdminOnly)
 			admin := protected.Group("/admin")
+			admin.Use(middleware.AdminOnly())
 			{
 				admin.GET("/dashboard-stats", controllers.GetDashboardStats)
+				
+				// Spareparts (CRUD)
+				spareparts := admin.Group("/spareparts")
+				{
+					spareparts.POST("", controllers.CreateSparepart)
+					spareparts.GET("", controllers.GetAllSpareparts)
+					spareparts.GET("/:id", controllers.GetSparepartByID)
+					spareparts.PUT("/:id", controllers.UpdateSparepart)
+					spareparts.DELETE("/:id", controllers.DeleteSparepart)
+				}
+
+				// Bookings Management (Admin)
+				bookings := admin.Group("/bookings")
+				{
+					bookings.POST("", controllers.CreateBooking)
+					bookings.GET("", controllers.GetAllBookings)
+					bookings.GET("/:id", controllers.GetBookingByID)
+					bookings.PUT("/:id", controllers.UpdateBooking)
+					bookings.PATCH("/:id/status", controllers.UpdateBookingStatus)
+					bookings.DELETE("/:id", controllers.DeleteBooking)
+					bookings.POST("/:id/items", controllers.AddBookingItem)
+				}
+
+				// Customers Management (Admin)
+				customers := admin.Group("/customers")
+				{
+					customers.POST("", controllers.CreateCustomer)
+					customers.GET("", controllers.GetAllCustomers)
+					customers.GET("/:id", controllers.GetCustomerByID)
+					customers.PUT("/:id", controllers.UpdateCustomer)
+					customers.DELETE("/:id", controllers.DeleteCustomer)
+				}
+
+				// Technicians Management (Admin)
+				technicians := admin.Group("/technicians")
+				{
+					technicians.POST("", controllers.CreateTechnician)
+					technicians.GET("", controllers.GetAllTechnicians)
+					technicians.GET("/:id", controllers.GetTechnicianByID)
+					technicians.PUT("/:id", controllers.UpdateTechnician)
+					technicians.DELETE("/:id", controllers.DeleteTechnician)
+				}
+			}
+
+			// Customer Routes (Protected by JWT)
+			customer := protected.Group("/customer")
+			{
+				customer.GET("/bookings", controllers.GetCustomerBookings)
+				customer.POST("/bookings", controllers.CreateCustomerBooking)
 			}
 		}
 	}
