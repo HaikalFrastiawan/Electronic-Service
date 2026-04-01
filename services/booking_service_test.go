@@ -55,7 +55,7 @@ func TestCreateBooking_CustomerNotFound(t *testing.T) {
 
 	err := services.CreateBooking(booking)
 	assert.Error(t, err)
-	assert.Equal(t, "customer tidak ditemukan", err.Error())
+	assert.Equal(t, "customer not found", err.Error())
 }
 
 func TestGetAllBookings_ReturnsList(t *testing.T) {
@@ -90,7 +90,7 @@ func TestGetBookingByID_NotFound(t *testing.T) {
 
 	_, err := services.GetBookingByID("77777")
 	assert.Error(t, err)
-	assert.Equal(t, "booking tidak ditemukan", err.Error())
+	assert.Equal(t, "booking not found", err.Error())
 }
 
 func TestUpdateBookingStatus_ValidStatus(t *testing.T) {
@@ -101,9 +101,9 @@ func TestUpdateBookingStatus_ValidStatus(t *testing.T) {
 	b := &models.Booking{CustomerID: custID, DeviceName: "Mesin Cuci"}
 	services.CreateBooking(b)
 
-	updated, err := services.UpdateBookingStatus(fmt.Sprint(b.ID), "in_progress")
+	updated, err := services.UpdateBookingStatus(fmt.Sprint(b.ID), "In Repair", nil)
 	require.NoError(t, err)
-	assert.Equal(t, "in_progress", updated.Status)
+	assert.Equal(t, "In Repair", updated.Status)
 }
 
 func TestUpdateBookingStatus_InvalidStatus(t *testing.T) {
@@ -114,9 +114,9 @@ func TestUpdateBookingStatus_InvalidStatus(t *testing.T) {
 	b := &models.Booking{CustomerID: custID, DeviceName: "Setrika"}
 	services.CreateBooking(b)
 
-	_, err := services.UpdateBookingStatus(fmt.Sprint(b.ID), "status_asal")
+	_, err := services.UpdateBookingStatus(fmt.Sprint(b.ID), "InvalidStatus", nil)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "status tidak valid")
+	assert.Contains(t, err.Error(), "invalid status")
 }
 
 func TestDeleteBooking_Success(t *testing.T) {

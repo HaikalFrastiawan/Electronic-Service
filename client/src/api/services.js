@@ -11,7 +11,10 @@ export const bookingsAPI = {
   create: (data) => api.post('/admin/bookings', data),
   createPublic: (data) => api.post('/public/bookings', data), // Public is correct as is
   update: (id, data) => api.put(`/admin/bookings/${id}`, data),
-  updateStatus: (id, status) => api.patch(`/admin/bookings/${id}/status`, { status }),
+  updateStatus: (id, status, technicianId = null) => api.patch(`/admin/bookings/${id}/status`, { 
+    status, 
+    technician_id: technicianId 
+  }),
   delete: (id) => api.delete(`/admin/bookings/${id}`),
   addItem: (bookingId, data) => api.post(`/admin/bookings/${bookingId}/items`, data),
   getCustomerBookings: () => api.get('/customer/bookings'),

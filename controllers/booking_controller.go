@@ -102,13 +102,14 @@ func UpdateBooking(c *gin.Context) {
 func UpdateBookingStatus(c *gin.Context) {
 	id := c.Param("id")
 	var input struct {
-		Status string `json:"status" binding:"required"`
+		Status       string `json:"status" binding:"required"`
+		TechnicianID *uint  `json:"technician_id"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	booking, err := services.UpdateBookingStatus(id, input.Status)
+	booking, err := services.UpdateBookingStatus(id, input.Status, input.TechnicianID)
 	if err != nil {
 		utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

@@ -58,8 +58,8 @@ func UpdateBooking(id string, input *models.Booking) (*models.Booking, error) {
 	return booking, nil
 }
 
-// UpdateBookingStatus updates the status of a specific booking.
-func UpdateBookingStatus(id string, status string) (*models.Booking, error) {
+// UpdateBookingStatus updates the status and potentially the technician of a specific booking.
+func UpdateBookingStatus(id string, status string, technicianID *uint) (*models.Booking, error) {
 	validStatuses := map[string]bool{
 		"Pending":          true,
 		"Waiting Parts":    true,
@@ -77,7 +77,14 @@ func UpdateBookingStatus(id string, status string) (*models.Booking, error) {
 		return nil, err
 	}
 
-	if err := config.DB.Model(booking).Update("status", status).Error; err != nil {
+	updates := map[string]interface{}{
+		"status": status,
+	}
+	if technicianID != nil {
+		updates["technician_id"] = *technicianID
+	}
+
+	if err := config.DB.Model(booking).Updates(updates).Error; err != nil {
 		return nil, err
 	}
 

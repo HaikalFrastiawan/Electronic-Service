@@ -85,7 +85,7 @@ export default function BookingsPage() {
   const [saving, setSaving] = useState(false)
   const [modal, setModal] = useState({ open: false, editing: null })
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null })
-  const [statusModal, setStatusModal] = useState({ open: false, id: null, current: '' })
+  const [statusModal, setStatusModal] = useState({ open: false, id: null, current: '', technician_id: null })
   const [addPartModal, setAddPartModal] = useState({ open: false, bookingId: null })
   const [spareparts, setSpareparts] = useState([])
   const [search, setSearch] = useState('')
@@ -148,9 +148,9 @@ export default function BookingsPage() {
 
   const handleStatusChange = async (status) => {
     try {
-      await bookingsAPI.updateStatus(statusModal.id, status)
+      await bookingsAPI.updateStatus(statusModal.id, status, statusModal.technician_id)
       toast.success('Status updated successfully')
-      setStatusModal({ open: false, id: null, current: '' })
+      setStatusModal({ open: false, id: null, current: '', technician_id: null })
       fetchData()
     } catch {
       toast.error('Failed to update status')
@@ -225,13 +225,20 @@ export default function BookingsPage() {
                       <p className="text-xs text-slate-500">{b.device_type}</p>
                     </td>
                     <td className="px-4 py-3 text-slate-300">{b.customer?.name ?? `#${b.customer_id}`}</td>
-                    <td className="px-4 py-3 text-slate-400">{b.technician?.name ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-400">
+                      {b.status === 'In Repair' ? (b.technician?.name ?? '—') : '—'}
+                    </td>
                     <td className="px-4 py-3 text-slate-300">
                       {b.estimated_cost > 0 ? `Rp ${b.estimated_cost.toLocaleString('id-ID')}` : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <button
-                        onClick={() => setStatusModal({ open: true, id: b.id, current: b.status })}
+                        onClick={() => setStatusModal({ 
+                          open: true, 
+                          id: b.id, 
+                          current: b.status, 
+                          technician_id: b.technician_id 
+                        })}
                         className="flex items-center gap-1 hover:opacity-80 transition-opacity"
                       >
                         <StatusBadge status={b.status} />
@@ -278,24 +285,41 @@ export default function BookingsPage() {
       {/* Status Picker Modal */}
       <Modal
         isOpen={statusModal.open}
-        onClose={() => setStatusModal({ open: false, id: null, current: '' })}
+        onClose={() => setStatusModal({ open: false, id: null, current: '', technician_id: null })}
         title="Change Status"
         size="sm"
       >
-        <div className="space-y-2">
-          {STATUSES.map((s) => (
-            <button
-              key={s}
-              onClick={() => handleStatusChange(s)}
-              className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                s === statusModal.current
-                  ? 'bg-brand-600/20 text-brand-400 border border-brand-500/30'
-                  : 'text-slate-300 hover:bg-slate-800'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
+        <div className="space-y-4">
+          {statusModal.current === 'In Repair' && (
+            <div>
+              <label className="label">Assign Technician</label>
+              <select 
+                className="input text-sm" 
+                value={statusModal.technician_id || ''} 
+                onChange={(e) => setStatusModal(prev => ({ ...prev, technician_id: e.target.value ? parseInt(e.target.value) : null }))}
+              >
+                <option value="">— Unassigned —</option>
+                {technicians.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </div>
+          )}
+
+          <div className={`space-y-2 pt-2 ${statusModal.current === 'In Repair' ? 'border-t border-slate-800' : ''}`}>
+            <p className="text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-2">Select New Status</p>
+            {STATUSES.map((s) => (
+              <button
+                key={s}
+                onClick={() => handleStatusChange(s)}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  s === statusModal.current
+                    ? 'bg-brand-600/20 text-brand-400 border border-brand-500/30'
+                    : 'text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
       </Modal>
 
