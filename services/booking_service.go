@@ -100,3 +100,23 @@ func DeleteBooking(id string) error {
 	}
 	return config.DB.Delete(booking).Error
 }
+
+// GetBookingsByCustomerID retrieves all bookings for a specific customer ID.
+func GetBookingsByCustomerID(customerID uint) ([]models.Booking, error) {
+	var bookings []models.Booking
+	err := config.DB.Preload("Customer").Preload("Technician").Where("customer_id = ?", customerID).Find(&bookings).Error
+	return bookings, err
+}
+
+// GetBookingByTrackingID retrieves a single booking by its tracking ID.
+func GetBookingByTrackingID(trackingID string) (*models.Booking, error) {
+	var booking models.Booking
+	err := config.DB.Preload("Customer").Preload("Technician").Where("tracking_id = ?", trackingID).First(&booking).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("booking not found with the provided Tracking ID")
+		}
+		return nil, err
+	}
+	return &booking, nil
+}

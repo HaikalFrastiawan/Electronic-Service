@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"booking-service/config"
 	"booking-service/models"
 	"booking-service/services"
 	"booking-service/utils"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -147,20 +147,10 @@ func PublicCreateBooking(c *gin.Context) {
 	}
 
 	// 1. Find or Create Customer
-	var customer models.Customer
-	config.DB.Where("email = ?", input.CustomerEmail).First(&customer)
-
-	if customer.ID == 0 {
-		customer = models.Customer{
-			Name:    input.CustomerName,
-			Email:   input.CustomerEmail,
-			Phone:   input.CustomerPhone,
-			Address: input.CustomerAddress,
-		}
-		if err := config.DB.Create(&customer).Error; err != nil {
-			utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create customer profile")
-			return
-		}
+	customer, err := services.FindOrCreateCustomer(input.CustomerName, input.CustomerEmail, input.CustomerPhone, input.CustomerAddress)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create or find customer profile")
+		return
 	}
 
 	// 2. Create Booking
@@ -184,9 +174,9 @@ func PublicCreateBooking(c *gin.Context) {
 // TrackBooking allows customers to check booking status by tracking ID.
 func TrackBooking(c *gin.Context) {
 	trackingID := c.Param("tracking_id")
-	var booking models.Booking
-	if err := config.DB.Preload("Customer").Preload("Technician").Where("tracking_id = ?", trackingID).First(&booking).Error; err != nil {
-		utils.ErrorResponse(c, http.StatusNotFound, "Booking not found with the provided Tracking ID")
+	booking, err := services.GetBookingByTrackingID(trackingID)
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 	utils.JSONResponse(c, http.StatusOK, "Booking found", booking)
@@ -200,17 +190,17 @@ func GetCustomerBookings(c *gin.Context) {
 		return
 	}
 
-	var customer models.Customer
 	// Find customer profile using the email from token
-	if err := config.DB.Where("email = ?", userEmail).First(&customer).Error; err != nil {
+	customer, err := services.GetCustomerByEmail(userEmail.(string))
+	if err != nil || customer == nil {
 		// If no customer profile exists, it means they haven't booked anything.
 		utils.JSONResponse(c, http.StatusOK, "No bookings found yet", []models.Booking{})
 		return
 	}
 
-	var bookings []models.Booking
 	// Find all bookings for this customer ID
-	if err := config.DB.Preload("Customer").Preload("Technician").Where("customer_id = ?", customer.ID).Find(&bookings).Error; err != nil {
+	bookings, err := services.GetBookingsByCustomerID(customer.ID)
+	if err != nil {
 		utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to retrieve your bookings")
 		return
 	}
@@ -221,7 +211,11 @@ func GetCustomerBookings(c *gin.Context) {
 // CreateCustomerBooking handles booking creation from authenticated customers.
 func CreateCustomerBooking(c *gin.Context) {
 	// 1. Get user identity from JWT context
-	userEmail, _ := c.Get("user_email")
+	userEmail, exists := c.Get("user_email")
+	if !exists {
+		utils.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized: No email in context")
+		return
+	}
 	
 	var input CustomerBookingInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -230,36 +224,45 @@ func CreateCustomerBooking(c *gin.Context) {
 	}
 
 	// 2. Find or Create Customer Profile
-	var customer models.Customer
-	config.DB.Where("email = ?", userEmail).First(&customer)
+	customer, err := services.GetCustomerByEmail(userEmail.(string))
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, "Database error")
+		return
+	}
 
-	if customer.ID == 0 {
+	if customer == nil {
 		// Fetch user to get the name safely if profile doesn't exist
-		var user models.User
-		if err := config.DB.Where("email = ?", userEmail).First(&user).Error; err != nil {
+		user, err := services.GetUserByEmail(userEmail.(string))
+		if err != nil {
 			utils.ErrorResponse(c, http.StatusUnauthorized, "User account not found")
 			return
 		}
 
-		customer = models.Customer{
+		newCustomer := models.Customer{
 			Name:    user.Name,
 			Email:   user.Email,
 			Phone:   input.Phone,
 			Address: input.Address,
 		}
-		if err := config.DB.Create(&customer).Error; err != nil {
+		if err := services.CreateCustomer(&newCustomer); err != nil {
 			utils.ErrorResponse(c, http.StatusInternalServerError, "Failed to create customer profile")
 			return
 		}
+		customer = &newCustomer
 	} else {
 		// Update phone and address if provided/needed
-		if input.Phone != "" {
+		updated := false
+		if input.Phone != "" && customer.Phone != input.Phone {
 			customer.Phone = input.Phone
+			updated = true
 		}
-		if input.Address != "" {
+		if input.Address != "" && customer.Address != input.Address {
 			customer.Address = input.Address
+			updated = true
 		}
-		config.DB.Save(&customer)
+		if updated {
+			services.UpdateCustomer(strconv.FormatUint(uint64(customer.ID), 10), customer)
+		}
 	}
 
 	// 3. Create Booking

@@ -53,3 +53,38 @@ func DeleteCustomer(id string) error {
 	}
 	return config.DB.Delete(customer).Error
 }
+
+// GetCustomerByEmail retrieves a customer by their email address.
+func GetCustomerByEmail(email string) (*models.Customer, error) {
+	var customer models.Customer
+	err := config.DB.Where("email = ?", email).First(&customer).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil // Return nil, nil to indicate not found, but not an error
+		}
+		return nil, err
+	}
+	return &customer, nil
+}
+
+// FindOrCreateCustomer looks for a customer by email. If not found, it creates a new one.
+func FindOrCreateCustomer(name, email, phone, address string) (*models.Customer, error) {
+	customer, err := GetCustomerByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	if customer != nil {
+		return customer, nil
+	}
+
+	newCustomer := models.Customer{
+		Name:    name,
+		Email:   email,
+		Phone:   phone,
+		Address: address,
+	}
+	if err := config.DB.Create(&newCustomer).Error; err != nil {
+		return nil, err
+	}
+	return &newCustomer, nil
+}

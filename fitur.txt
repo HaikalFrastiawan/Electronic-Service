@@ -1,0 +1,33 @@
+1. Sistem Notifikasi Otomatis (WhatsApp/Email)
+Saat ini, status hanya berubah di database. Fitur ini akan otomatis mengirim pesan ke pelanggan saat:
+
+Booking Diterima: Mengirimkan Tracking ID.
+Ready for Pickup: Memberitahu pelanggan bahwa perangkat sudah selesai diperbaiki dan siap diambil.
+Selesai: Mengirimkan ucapan terima kasih dan link invoice.
+2. Digital Invoicing (PDF Generation)
+Admin dapat mengunduh atau mengirimkan Invoice PDF secara otomatis saat status diubah menjadi "Completed". Invoice ini akan mencakup:
+
+Biaya jasa (Estimated Cost).
+Daftar Sparepart yang digunakan (beserta harganya).
+Total tagihan dan instruksi pembayaran.
+3. History Perbaikan Berdasarkan Serial Number
+Fitur ini sangat berguna untuk mendeteksi unit yang "sering rusak".
+
+Saat input Serial Number, sistem akan menampilkan history perbaikan perangkat tersebut di masa lalu.
+Membantu teknisi mengetahui apakah ini kerusakan baru atau komplain dari servis sebelumnya.
+4. Halaman Tracking Publik yang Interaktif
+Meskipun API tracking sudah ada di backend, Anda bisa membuat halaman /track/:id yang sangat cantik dengan:
+
+Progress Stepper: Menampilkan visual perjalanan perangkat (Pending -> In Repair -> Ready).
+Estimasi Selesai: Menampilkan kapan perangkat diperkirakan bisa diambil.
+5. Dashboard Khusus Teknisi (Role-Based)
+Saat ini teknisi baru sebatas data. Anda bisa menambahkan Role "Technician" agar mereka bisa login dan:
+
+Melihat daftar tugas yang hanya ditugaskan ke mereka.
+Mengupdate progres teknis dan catatan internal tanpa harus melihat menu Admin yang sensitif (seperti data keuangan).
+6. Inventory Alert (Low Stock)
+Karena Anda sudah memiliki menu Sparepart, fitur ini akan memberikan peringatan (notifikasi atau warna merah) jika stok sparepart tertentu berada di bawah batas minimum (misal: stok tinggal 2).
+
+7. Manajemen Garansi
+Menambahkan field "Warranty Period" (misal: 30 hari).
+Sistem akan otomatis menandai jika sebuah perangkat masih dalam masa garansi saat pelanggan datang kembali.
