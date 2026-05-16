@@ -189,8 +189,8 @@ export default function BookingsPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Bookings</h1>
-          <p className="text-slate-400 text-sm mt-1">{bookings.length} total entries</p>
+          <h1 className="text-2xl font-bold text-slate-900">Bookings</h1>
+          <p className="text-slate-500 text-sm mt-1">{bookings.length} total entries</p>
         </div>
         <button className="btn-primary" onClick={() => setModal({ open: true, editing: null })}>
           <PlusIcon className="w-4 h-4" /> New Booking
@@ -202,33 +202,33 @@ export default function BookingsPage() {
       <div className="card overflow-hidden">
         {loading ? <LoadingSpinner /> : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm text-slate-700">
               <thead>
-                <tr className="border-b border-slate-800 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">ID</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Device</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Customer</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Technician</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Est. Cost</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Actions</th>
+                <tr className="border-b border-slate-200 text-left">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">ID</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Device</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Customer</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Technician</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Est. Cost</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {filtered.length === 0 ? (
                   <tr><td colSpan={7} className="px-4 py-12 text-center text-slate-500">No matching bookings found</td></tr>
                 ) : filtered.map((b) => (
-                  <tr key={b.id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={b.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3 text-slate-500">{b.id}</td>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-slate-100">{b.device_name}</p>
+                      <p className="font-medium text-slate-800">{b.device_name}</p>
                       <p className="text-xs text-slate-500">{b.device_type}</p>
                     </td>
-                    <td className="px-4 py-3 text-slate-300">{b.customer?.name ?? `#${b.customer_id}`}</td>
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 text-slate-600">{b.customer?.name ?? `#${b.customer_id}`}</td>
+                    <td className="px-4 py-3 text-slate-600">
                       {b.status === 'In Repair' ? (b.technician?.name ?? '—') : '—'}
                     </td>
-                    <td className="px-4 py-3 text-slate-300">
+                    <td className="px-4 py-3 text-slate-600">
                       {b.estimated_cost > 0 ? `Rp ${b.estimated_cost.toLocaleString('id-ID')}` : '—'}
                     </td>
                     <td className="px-4 py-3">

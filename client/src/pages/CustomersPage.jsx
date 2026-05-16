@@ -14,13 +14,13 @@ function CustomerForm({ onSubmit, defaultValues, loading }) {
       <div>
         <label className="label">Full Name *</label>
         <input className="input" placeholder="e.g. John Doe" {...register('name', { required: 'Required' })} />
-        {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
+        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="label">Phone *</label>
           <input className="input" placeholder="0812..." {...register('phone', { required: 'Required' })} />
-          {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>}
+          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
         </div>
         <div>
           <label className="label">Email</label>
@@ -103,8 +103,8 @@ export default function CustomersPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Customers</h1>
-          <p className="text-slate-400 text-sm mt-1">{customers.length} total entries</p>
+          <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
+          <p className="text-slate-500 text-sm mt-1">{customers.length} total entries</p>
         </div>
         <button className="btn-primary" onClick={() => setModal({ open: true, editing: null })}>
           <PlusIcon className="w-4 h-4" /> New Customer
@@ -116,35 +116,35 @@ export default function CustomersPage() {
       <div className="card overflow-hidden">
         {loading ? <LoadingSpinner /> : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-slate-300">
+            <table className="w-full text-sm text-slate-700">
               <thead>
-                <tr className="border-b border-slate-800 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Name</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Contact</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Address</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Actions</th>
+                <tr className="border-b border-slate-200 text-left">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Contact</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Address</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {filtered.length === 0 ? (
                   <tr><td colSpan={4} className="px-4 py-12 text-center text-slate-500">No customers found</td></tr>
                 ) : filtered.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-slate-100">{c.name}</p>
+                      <p className="font-medium text-slate-800">{c.name}</p>
                       <p className="text-xs text-slate-500">ID: {c.id}</p>
                     </td>
                     <td className="px-4 py-3">
                       <p>{c.phone}</p>
                       <p className="text-xs text-slate-500">{c.email}</p>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 italic truncate max-w-xs">{c.address || '—'}</td>
+                    <td className="px-4 py-3 text-slate-600 italic truncate max-w-xs">{c.address || '—'}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
                         <button className="btn-ghost p-1.5 rounded-lg" onClick={() => setModal({ open: true, editing: c })}>
                           <PencilIcon className="w-4 h-4" />
                         </button>
-                        <button className="btn-ghost p-1.5 rounded-lg text-red-400 hover:text-red-300" onClick={() => setDeleteDialog({ open: true, id: c.id })}>
+                        <button className="btn-ghost p-1.5 rounded-lg text-red-500 hover:text-red-600" onClick={() => setDeleteDialog({ open: true, id: c.id })}>
                           <TrashIcon className="w-4 h-4" />
                         </button>
                       </div>

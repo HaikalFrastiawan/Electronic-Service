@@ -14,7 +14,7 @@ function SparepartForm({ onSubmit, defaultValues, loading }) {
       <div>
         <label className="label">Part Name *</label>
         <input className="input" placeholder="e.g. LCD Screen" {...register('name', { required: 'Required' })} />
-        {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
+        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
       </div>
       <div>
         <label className="label">Brand</label>
@@ -24,12 +24,12 @@ function SparepartForm({ onSubmit, defaultValues, loading }) {
         <div>
           <label className="label">Stock *</label>
           <input className="input" type="number" min="0" placeholder="0" {...register('stock', { required: 'Required', valueAsNumber: true, min: 0 })} />
-          {errors.stock && <p className="text-red-400 text-xs mt-1">Invalid stock</p>}
+          {errors.stock && <p className="text-red-500 text-xs mt-1">Invalid stock</p>}
         </div>
         <div>
           <label className="label">Price (Rp) *</label>
           <input className="input" type="number" min="0" step="1000" placeholder="0" {...register('price', { required: 'Required', valueAsNumber: true, min: 0 })} />
-          {errors.price && <p className="text-red-400 text-xs mt-1">Invalid price</p>}
+          {errors.price && <p className="text-red-500 text-xs mt-1">Invalid price</p>}
         </div>
       </div>
       <div className="flex justify-end pt-2">
@@ -98,8 +98,8 @@ export default function SparepartsPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Spareparts Inventory</h1>
-          <p className="text-slate-400 text-sm mt-1">{spareparts.length} total items in stock</p>
+          <h1 className="text-2xl font-bold text-slate-900">Spareparts Inventory</h1>
+          <p className="text-slate-500 text-sm mt-1">{spareparts.length} total items in stock</p>
         </div>
         <button className="btn-primary" onClick={() => setModal({ open: true, editing: null })}>
           <PlusIcon className="w-4 h-4" /> Add Part
@@ -109,40 +109,40 @@ export default function SparepartsPage() {
       <div className="card overflow-hidden">
         {loading ? <LoadingSpinner /> : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-slate-300">
+            <table className="w-full text-sm text-slate-700">
               <thead>
-                <tr className="border-b border-slate-800 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Part Name</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Brand</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Stock</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Price</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Actions</th>
+                <tr className="border-b border-slate-200 text-left">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Part Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Brand</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Stock</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Price</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {spareparts.length === 0 ? (
                   <tr><td colSpan={5} className="px-4 py-12 text-center text-slate-500">No spareparts registered</td></tr>
                 ) : spareparts.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3 font-medium text-slate-100">
+                  <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-slate-800">
                       <div className="flex items-center gap-2">
-                        <CubeIcon className="w-4 h-4 text-slate-400" />
+                        <CubeIcon className="w-4 h-4 text-slate-500" />
                         {p.name}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-300">{p.brand || '—'}</td>
+                    <td className="px-4 py-3 text-slate-600">{p.brand || '—'}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded font-medium ${p.stock <= 5 ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                      <span className={`px-2 py-0.5 rounded font-medium ${p.stock <= 5 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
                         {p.stock}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-300 font-mono">Rp {p.price.toLocaleString('id-ID')}</td>
+                    <td className="px-4 py-3 text-slate-600 font-mono">Rp {p.price.toLocaleString('id-ID')}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
                         <button className="btn-ghost p-1.5 rounded-lg" onClick={() => setModal({ open: true, editing: p })}>
                           <PencilIcon className="w-4 h-4" />
                         </button>
-                        <button className="btn-ghost p-1.5 rounded-lg text-red-400 hover:text-red-300" onClick={() => setDeleteDialog({ open: true, id: p.id })}>
+                        <button className="btn-ghost p-1.5 rounded-lg text-red-500 hover:text-red-600" onClick={() => setDeleteDialog({ open: true, id: p.id })}>
                           <TrashIcon className="w-4 h-4" />
                         </button>
                       </div>

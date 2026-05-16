@@ -4,8 +4,6 @@ import Navbar from '../components/Navbar'
 import toast from 'react-hot-toast'
 import { bookingsAPI } from '../api/services'
 import { 
-  DevicePhoneMobileIcon, 
-  ComputerDesktopIcon, 
   SpeakerWaveIcon, 
   TvIcon,
   WrenchScrewdriverIcon,
@@ -38,14 +36,14 @@ export default function LandingPage() {
     }
   }
 
-  // Desain layanan yang unik, tidak "plek ketiplek" dengan mockup, dan memasukkan "Sound"
+  // Desain layanan yang berfokus pada TV, Kipas Angin, Magicom, Mesin Cuci, Speaker
   const services = [
-    { name: 'Smartphone', icon: DevicePhoneMobileIcon },
-    { name: 'PC & Laptop', icon: ComputerDesktopIcon },
-    { name: 'Sound System', icon: SpeakerWaveIcon },
     { name: 'TV & Monitor', icon: TvIcon },
-    { name: 'Home Appliance', icon: BoltIcon },
-    { name: 'General Repair', icon: WrenchScrewdriverIcon },
+    { name: 'Kipas Angin', icon: BoltIcon },
+    { name: 'Magicom / Rice Cooker', icon: WrenchScrewdriverIcon },
+    { name: 'Mesin Cuci', icon: WrenchScrewdriverIcon },
+    { name: 'Speaker / Audio', icon: SpeakerWaveIcon },
+    { name: 'Elektronik Lainnya', icon: BoltIcon },
   ]
 
   // Placeholder untuk gambar background (bisa diganti URL asli nanti)
@@ -211,76 +209,76 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-12">
-            {/* Service 1: AC */}
+            {/* Service 1: TV & Speaker */}
             <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-10 items-center">
               <div className="w-full lg:w-2/5 relative">
                 <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-md z-10 shadow-lg">Layanan</div>
-                <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80" alt="Service AC" className="w-full h-[300px] object-cover rounded-2xl shadow-inner" />
+                <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80" alt="Service TV & Speaker" className="w-full h-[300px] object-cover rounded-2xl shadow-inner" />
               </div>
               <div className="w-full lg:w-3/5">
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Service AC</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Service TV & Speaker</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  AYOO SERVIS menyediakan layanan service AC untuk semua jenis dan merek, baik AC rumah maupun kantor. Kami menangani pemasangan, pembersihan, perawatan rutin, hingga perbaikan kerusakan dengan cepat dan profesional. Teknisi berpengalaman kami siap datang ke lokasi Anda.
+                  AYOO SERVIS menyediakan layanan service TV LED, LCD, Smart TV, dan berbagai jenis Speaker / Sound System. Kami memiliki teknisi handal yang siap menangani kerusakan layar, suara, hingga masalah komponen mati total.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 mb-8">
-                  {['AC tidak dingin sama sekali', 'Tambah / Isi Freon', 'AC bocor air dari dalam', 'AC bau tak sedap', 'AC mati total tidak nyala', 'dan kerusakan lainnya'].map((item, i) => (
+                  {['Layar TV bergaris / gelap', 'TV tidak ada suara', 'TV mati total', 'Speaker sember / pecah', 'Speaker Bluetooth mati', 'Ganti komponen / panel'].map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <CheckCircleOutline className="w-5 h-5 text-slate-400 flex-shrink-0" />
                       <span className="text-sm text-slate-700 font-medium">{item}</span>
                     </div>
                   ))}
                 </div>
-                <a href="https://wa.me/628001114444?text=Halo%20AYOO%20SERVIS,%20saya%20ingin%20memesan%20layanan%20Service%20AC." target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2 py-3 px-8 text-sm font-bold rounded-full shadow-lg shadow-brand-500/30">
+                <a href="https://wa.me/628001114444?text=Halo%20AYOO%20SERVIS,%20saya%20ingin%20memesan%20layanan%20Service%20TV%20Atau%20Speaker." target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2 py-3 px-8 text-sm font-bold rounded-full shadow-lg shadow-brand-500/30">
                   <ChatBubbleLeftRightIcon className="w-5 h-5" /> Pesan via WhatsApp
                 </a>
               </div>
             </div>
 
-            {/* Service 2: Kulkas & Mesin Cuci */}
+            {/* Service 2: Mesin Cuci */}
             <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-10 items-center">
               <div className="w-full lg:w-2/5 relative lg:order-2">
                 <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-md z-10 shadow-lg">Layanan</div>
-                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80" alt="Service Kulkas & Mesin Cuci" className="w-full h-[300px] object-cover rounded-2xl shadow-inner" />
+                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80" alt="Service Mesin Cuci" className="w-full h-[300px] object-cover rounded-2xl shadow-inner" />
               </div>
               <div className="w-full lg:w-3/5 lg:order-1">
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Service Mesin Cuci & Kulkas</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Service Mesin Cuci</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  Perbaikan peralatan rumah tangga seperti mesin cuci 1 tabung/2 tabung dan kulkas/freezer. Kami memastikan perangkat Anda berfungsi optimal kembali tanpa harus membawa perangkat yang berat ke bengkel.
+                  Perbaikan mesin cuci 1 tabung (Top Load/Front Load) maupun 2 tabung. Kami memastikan mesin cuci Anda berfungsi optimal kembali tanpa harus repot membawanya ke bengkel, teknisi kami akan datang ke tempat Anda.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 mb-8">
-                  {['Mesin cuci bocor', 'Kulkas tidak dingin', 'Pengering tidak berputar', 'Freezer membeku tebal', 'Bunyi bising / bergetar', 'Mati total / Error modul'].map((item, i) => (
+                  {['Mesin cuci bocor / air merembes', 'Air tidak mau keluar/masuk', 'Pengering tidak berputar', 'Mesin mati total / Error', 'Bunyi bising / bergetar', 'Modul kontrol rusak'].map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <CheckCircleOutline className="w-5 h-5 text-slate-400 flex-shrink-0" />
                       <span className="text-sm text-slate-700 font-medium">{item}</span>
                     </div>
                   ))}
                 </div>
-                <a href="https://wa.me/628001114444?text=Halo%20AYOO%20SERVIS,%20saya%20ingin%20memesan%20layanan%20Service%20Mesin%20Cuci%20Atau%20Kulkas." target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2 py-3 px-8 text-sm font-bold rounded-full shadow-lg shadow-brand-500/30">
+                <a href="https://wa.me/628001114444?text=Halo%20AYOO%20SERVIS,%20saya%20ingin%20memesan%20layanan%20Service%20Mesin%20Cuci." target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2 py-3 px-8 text-sm font-bold rounded-full shadow-lg shadow-brand-500/30">
                   <ChatBubbleLeftRightIcon className="w-5 h-5" /> Pesan via WhatsApp
                 </a>
               </div>
             </div>
 
-            {/* Service 3: TV & Elektronik */}
+            {/* Service 3: Kipas Angin & Magicom */}
             <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-10 items-center">
               <div className="w-full lg:w-2/5 relative">
                 <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-4 py-1.5 rounded-md z-10 shadow-lg">Layanan</div>
-                <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80" alt="Service TV" className="w-full h-[300px] object-cover rounded-2xl shadow-inner" />
+                <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80" alt="Service Kipas Angin & Magicom" className="w-full h-[300px] object-cover rounded-2xl shadow-inner" />
               </div>
               <div className="w-full lg:w-3/5">
-                <h3 className="text-2xl font-bold text-slate-800 mb-4">Service TV & Elektronik Lainnya</h3>
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Service Kipas Angin & Magicom</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">
-                  Layanan perbaikan TV LED, LCD, Smart TV, dan perangkat elektronik lainnya dari berbagai merek. Teknisi spesialis kami memiliki peralatan lengkap untuk mendiagnosis dan memperbaiki masalah pada board komponen elektronik Anda.
+                  Kami juga melayani perbaikan peralatan rumah tangga sehari-hari seperti Kipas Angin berbagai jenis (berdiri, dinding, gantung) dan Magicom / Rice Cooker agar bisa digunakan kembali dengan aman.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 mb-8">
-                  {['Layar bergaris / gelap', 'TV tidak ada suara', 'TV mati total', 'Koneksi HDMI / WiFi bermasalah', 'Speaker / Sound system sember', 'Ganti komponen / panel'].map((item, i) => (
+                  {['Kipas angin mati / putus', 'Putaran kipas lemah', 'Kipas angin berisik', 'Magicom tidak panas', 'Nasi cepat basi', 'Mati total / Error'].map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <CheckCircleOutline className="w-5 h-5 text-slate-400 flex-shrink-0" />
                       <span className="text-sm text-slate-700 font-medium">{item}</span>
                     </div>
                   ))}
                 </div>
-                <a href="https://wa.me/628001114444?text=Halo%20AYOO%20SERVIS,%20saya%20ingin%20memesan%20layanan%20Service%20TV/Elektronik." target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2 py-3 px-8 text-sm font-bold rounded-full shadow-lg shadow-brand-500/30">
+                <a href="https://wa.me/628001114444?text=Halo%20AYOO%20SERVIS,%20saya%20ingin%20memesan%20layanan%20Service%20Kipas%20Angin/Magicom." target="_blank" rel="noopener noreferrer" className="btn-primary inline-flex items-center gap-2 py-3 px-8 text-sm font-bold rounded-full shadow-lg shadow-brand-500/30">
                   <ChatBubbleLeftRightIcon className="w-5 h-5" /> Pesan via WhatsApp
                 </a>
               </div>

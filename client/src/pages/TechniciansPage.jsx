@@ -14,13 +14,13 @@ function TechnicianForm({ onSubmit, defaultValues, loading }) {
       <div>
         <label className="label">Full Name *</label>
         <input className="input" placeholder="e.g. Mike Smith" {...register('name', { required: 'Required' })} />
-        {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
+        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="label">Phone *</label>
           <input className="input" placeholder="08..." {...register('phone', { required: 'Required' })} />
-          {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>}
+          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
         </div>
         <div>
           <label className="label">Specialty</label>
@@ -29,7 +29,7 @@ function TechnicianForm({ onSubmit, defaultValues, loading }) {
       </div>
       <div className="flex items-center gap-2">
         <input type="checkbox" id="is_available" className="accent-brand-500 rounded" {...register('is_available')} />
-        <label htmlFor="is_available" className="text-sm text-slate-300">Available for assignment</label>
+        <label htmlFor="is_available" className="text-sm text-slate-600">Available for assignment</label>
       </div>
       <div className="flex justify-end pt-2">
         <button type="submit" className="btn-primary" disabled={loading}>
@@ -97,8 +97,8 @@ export default function TechniciansPage() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Technicians</h1>
-          <p className="text-slate-400 text-sm mt-1">{technicians.length} total staff</p>
+          <h1 className="text-2xl font-bold text-slate-900">Technicians</h1>
+          <p className="text-slate-500 text-sm mt-1">{technicians.length} total staff</p>
         </div>
         <button className="btn-primary" onClick={() => setModal({ open: true, editing: null })}>
           <PlusIcon className="w-4 h-4" /> Add Technician
@@ -108,27 +108,27 @@ export default function TechniciansPage() {
       <div className="card overflow-hidden">
         {loading ? <LoadingSpinner /> : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-slate-300">
+            <table className="w-full text-sm text-slate-700">
               <thead>
-                <tr className="border-b border-slate-800 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Name</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Phone</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Specialty</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Actions</th>
+                <tr className="border-b border-slate-200 text-left">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Phone</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Specialty</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Status</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {technicians.length === 0 ? (
                   <tr><td colSpan={5} className="px-4 py-12 text-center text-slate-500">No technicians registered</td></tr>
                 ) : technicians.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3 font-medium text-slate-100">{t.name}</td>
-                    <td className="px-4 py-3 text-slate-300">{t.phone}</td>
-                    <td className="px-4 py-3 text-slate-400">{t.specialty || 'General'}</td>
+                  <tr key={t.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-slate-800">{t.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{t.phone}</td>
+                    <td className="px-4 py-3 text-slate-600">{t.specialty || 'General'}</td>
                     <td className="px-4 py-3">
                       {t.is_available ? (
-                        <div className="flex items-center gap-1.5 text-emerald-400 font-medium no-wrap">
+                        <div className="flex items-center gap-1.5 text-emerald-600 font-medium no-wrap">
                           <CheckCircleIcon className="w-4 h-4" /> Available
                         </div>
                       ) : (
@@ -142,7 +142,7 @@ export default function TechniciansPage() {
                         <button className="btn-ghost p-1.5 rounded-lg" onClick={() => setModal({ open: true, editing: t })}>
                           <PencilIcon className="w-4 h-4" />
                         </button>
-                        <button className="btn-ghost p-1.5 rounded-lg text-red-400 hover:text-red-300" onClick={() => setDeleteDialog({ open: true, id: t.id })}>
+                        <button className="btn-ghost p-1.5 rounded-lg text-red-500 hover:text-red-600" onClick={() => setDeleteDialog({ open: true, id: t.id })}>
                           <TrashIcon className="w-4 h-4" />
                         </button>
                       </div>
