@@ -10,6 +10,7 @@ export const bookingsAPI = {
   getById: (id) => api.get(`/admin/bookings/${id}`),
   create: (data) => api.post('/admin/bookings', data),
   createPublic: (data) => api.post('/public/bookings', data), // Public is correct as is
+  trackPublic: (trackingId) => api.get(`/public/track/${trackingId}`),
   update: (id, data) => api.put(`/admin/bookings/${id}`, data),
   updateStatus: (id, status, technicianId = null) => api.patch(`/admin/bookings/${id}/status`, { 
     status, 

@@ -18,6 +18,7 @@ export default function Navbar() {
           {/* Nav Links */}
           <div className="hidden lg:flex items-center gap-8">
             <Link to="/" className="text-sm font-semibold text-brand-600 border-b-2 border-brand-600 pb-1">Beranda</Link>
+            <a href="#services" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Layanan</a>
             <a href="#about" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Tentang Kami</a>
             <a href="#promo" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Promo</a>
             <a href="#info" className="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Informasi</a>
