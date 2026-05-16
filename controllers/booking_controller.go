@@ -240,7 +240,7 @@ func CreateCustomerBooking(c *gin.Context) {
 
 		newCustomer := models.Customer{
 			Name:    user.Name,
-			Email:   user.Email,
+			Email:   &user.Email,
 			Phone:   input.Phone,
 			Address: input.Address,
 		}

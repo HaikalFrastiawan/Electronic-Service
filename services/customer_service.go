@@ -39,6 +39,12 @@ func UpdateCustomer(id string, input *models.Customer) (*models.Customer, error)
 	if err != nil {
 		return nil, err
 	}
+
+	if input.Email != nil && *input.Email == "" {
+		input.Email = nil
+		config.DB.Model(customer).Update("email", nil)
+	}
+
 	if err := config.DB.Model(customer).Updates(input).Error; err != nil {
 		return nil, err
 	}
@@ -69,20 +75,25 @@ func GetCustomerByEmail(email string) (*models.Customer, error) {
 
 // FindOrCreateCustomer looks for a customer by email. If not found, it creates a new one.
 func FindOrCreateCustomer(name, email, phone, address string) (*models.Customer, error) {
-	customer, err := GetCustomerByEmail(email)
-	if err != nil {
-		return nil, err
-	}
-	if customer != nil {
-		return customer, nil
+	if email != "" {
+		customer, err := GetCustomerByEmail(email)
+		if err != nil {
+			return nil, err
+		}
+		if customer != nil {
+			return customer, nil
+		}
 	}
 
 	newCustomer := models.Customer{
 		Name:    name,
-		Email:   email,
 		Phone:   phone,
 		Address: address,
 	}
+	if email != "" {
+		newCustomer.Email = &email
+	}
+	
 	if err := config.DB.Create(&newCustomer).Error; err != nil {
 		return nil, err
 	}

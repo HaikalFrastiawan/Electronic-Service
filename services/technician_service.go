@@ -12,10 +12,10 @@ import (
 func CreateTechnician(input *models.Technician) error {
 	return config.DB.Transaction(func(tx *gorm.DB) error {
 		// If email is provided, create a user account for the technician
-		if input.Email != "" {
+		if input.Email != nil && *input.Email != "" {
 			user := models.User{
 				Name:     input.Name,
-				Email:    input.Email,
+				Email:    *input.Email,
 				Password: input.Password,
 				Role:     "technician",
 			}
@@ -58,6 +58,12 @@ func UpdateTechnician(id string, input *models.Technician) (*models.Technician, 
 	if err != nil {
 		return nil, err
 	}
+
+	if input.Email != nil && *input.Email == "" {
+		input.Email = nil
+		config.DB.Model(technician).Update("email", nil)
+	}
+
 	if err := config.DB.Model(technician).Updates(input).Error; err != nil {
 		return nil, err
 	}
