@@ -90,6 +90,15 @@ func SetupRouter() *gin.Engine {
 				customer.GET("/bookings", controllers.GetCustomerBookings)
 				customer.POST("/bookings", controllers.CreateCustomerBooking)
 			}
+			
+			// Technician Routes (Protected by JWT)
+			technician := protected.Group("/technician")
+			{
+				technician.GET("/bookings", controllers.GetTechnicianBookings)
+				technician.PATCH("/bookings/:id/status", controllers.UpdateBookingStatus)
+				technician.POST("/bookings/:id/items", controllers.AddBookingItem)
+				technician.GET("/spareparts", controllers.GetAllSpareparts)
+			}
 		}
 	}
 

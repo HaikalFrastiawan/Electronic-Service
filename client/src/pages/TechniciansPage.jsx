@@ -27,6 +27,16 @@ function TechnicianForm({ onSubmit, defaultValues, loading }) {
           <input className="input" placeholder="e.g. Audio, HVAC" {...register('specialty')} />
         </div>
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="label">Email (Optional)</label>
+          <input type="email" className="input" placeholder="For login access" {...register('email')} />
+        </div>
+        <div>
+          <label className="label">Password</label>
+          <input type="password" className="input" placeholder="Default: technician123" {...register('password')} />
+        </div>
+      </div>
       <div className="flex items-center gap-2">
         <input type="checkbox" id="is_available" className="accent-brand-500 rounded" {...register('is_available')} />
         <label htmlFor="is_available" className="text-sm text-slate-600">Available for assignment</label>

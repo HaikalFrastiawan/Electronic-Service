@@ -10,6 +10,7 @@ import BookingsPage from './pages/BookingsPage'
 import CustomersPage from './pages/CustomersPage'
 import TechniciansPage from './pages/TechniciansPage'
 import SparepartsPage from './pages/SparepartsPage'
+import TechnicianDashboardPage from './pages/TechnicianDashboardPage'
 import CustomerDashboardPage from './pages/CustomerDashboardPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
@@ -22,7 +23,9 @@ import { Toaster } from 'react-hot-toast'
 function DashboardRedirect() {
   const { user, isAuthenticated } = useAuth()
   if (!isAuthenticated) return <Navigate to="/login" replace />
-  return <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/customer/dashboard'} replace />
+  if (user?.role === 'admin') return <Navigate to="/admin/dashboard" replace />
+  if (user?.role === 'technician') return <Navigate to="/technician/dashboard" replace />
+  return <Navigate to="/customer/dashboard" replace />
 }
 
 export default function App() {
@@ -46,6 +49,11 @@ export default function App() {
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/technicians" element={<TechniciansPage />} />
               <Route path="/spareparts" element={<SparepartsPage />} />
+            </Route>
+
+            {/* Technician Routes */}
+            <Route element={<ProtectedRoute role="technician" />}>
+              <Route path="/technician/dashboard" element={<TechnicianDashboardPage />} />
             </Route>
 
             {/* Customer Routes */}

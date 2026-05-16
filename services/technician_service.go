@@ -10,7 +10,26 @@ import (
 
 // CreateTechnician saves a new technician record.
 func CreateTechnician(input *models.Technician) error {
-	return config.DB.Create(input).Error
+	return config.DB.Transaction(func(tx *gorm.DB) error {
+		// If email is provided, create a user account for the technician
+		if input.Email != "" {
+			user := models.User{
+				Name:     input.Name,
+				Email:    input.Email,
+				Password: input.Password,
+				Role:     "technician",
+			}
+			if input.Password == "" {
+				user.Password = "technician123" // Default password
+			}
+			if err := tx.Create(&user).Error; err != nil {
+				return err
+			}
+			input.UserID = &user.ID
+		}
+		
+		return tx.Create(input).Error
+	})
 }
 
 // GetAllTechnicians retrieves all technician records.

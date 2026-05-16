@@ -17,6 +17,7 @@ const navLinks = [
   { to: '/customers', label: 'Customers', Icon: UsersIcon },
   { to: '/technicians', label: 'Technicians', Icon: WrenchScrewdriverIcon },
   { to: '/spareparts', label: 'Spareparts', Icon: CubeIcon },
+  { to: '/technician/dashboard', label: 'Technician Portal', Icon: ClipboardDocumentListIcon },
   { to: '/customer/dashboard', label: 'Customer View', Icon: UserCircleIcon },
 ]
 
@@ -32,8 +33,10 @@ export default function Sidebar() {
   // Filter links based on role
   const filteredLinks = navLinks.filter(link => {
     if (user?.role === 'admin') {
-      // Admins don't need 'Customer View' in their management sidebar
-      return link.to !== '/customer/dashboard'
+      return !['/customer/dashboard', '/technician/dashboard'].includes(link.to)
+    }
+    if (user?.role === 'technician') {
+      return link.to === '/technician/dashboard'
     }
     // Customers only see a simplified dashboard
     return link.to === '/customer/dashboard'
@@ -43,6 +46,9 @@ export default function Sidebar() {
   const displayLinks = filteredLinks.map(link => {
     if (user?.role === 'customer' && link.to === '/customer/dashboard') {
       return { ...link, label: 'Status Servis' }
+    }
+    if (user?.role === 'technician' && link.to === '/technician/dashboard') {
+      return { ...link, label: 'Tugas Saya' }
     }
     return link
   })

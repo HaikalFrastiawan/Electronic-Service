@@ -120,3 +120,23 @@ func GetBookingByTrackingID(trackingID string) (*models.Booking, error) {
 	}
 	return &booking, nil
 }
+
+// GetBookingsByTechnicianEmail retrieves all bookings assigned to a technician by their user email.
+func GetBookingsByTechnicianEmail(email string) ([]models.Booking, error) {
+	var bookings []models.Booking
+	var technician models.Technician
+
+	// Find the technician by email
+	if err := config.DB.Where("email = ?", email).First(&technician).Error; err != nil {
+		return nil, errors.New("technician profile not found")
+	}
+
+	// Fetch bookings assigned to this technician
+	err := config.DB.Preload("Customer").
+		Preload("Technician").
+		Preload("Items").
+		Preload("Items.Sparepart").
+		Where("technician_id = ?", technician.ID).
+		Find(&bookings).Error
+	return bookings, err
+}

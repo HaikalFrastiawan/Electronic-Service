@@ -282,3 +282,20 @@ func CreateCustomerBooking(c *gin.Context) {
 	services.PreloadBooking(&booking)
 	utils.JSONResponse(c, http.StatusCreated, "Booking created successfully from your account!", booking)
 }
+
+// GetTechnicianBookings allows a logged-in technician to fetch their assigned bookings.
+func GetTechnicianBookings(c *gin.Context) {
+	userEmail, exists := c.Get("user_email")
+	if !exists {
+		utils.ErrorResponse(c, http.StatusUnauthorized, "Unauthorized: No email in context")
+		return
+	}
+
+	bookings, err := services.GetBookingsByTechnicianEmail(userEmail.(string))
+	if err != nil {
+		utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.JSONResponse(c, http.StatusOK, "Assigned bookings retrieved", bookings)
+}

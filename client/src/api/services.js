@@ -20,6 +20,9 @@ export const bookingsAPI = {
   addItem: (bookingId, data) => api.post(`/admin/bookings/${bookingId}/items`, data),
   getCustomerBookings: () => api.get('/customer/bookings'),
   createCustomerBooking: (data) => api.post('/customer/bookings', data),
+  getTechnicianBookings: () => api.get('/technician/bookings'),
+  updateTechnicianBookingStatus: (id, status) => api.patch(`/technician/bookings/${id}/status`, { status }),
+  addTechnicianBookingItem: (bookingId, data) => api.post(`/technician/bookings/${bookingId}/items`, data),
 }
 
 export const customersAPI = {
@@ -40,6 +43,7 @@ export const techniciansAPI = {
 
 export const sparepartsAPI = {
   getAll: () => api.get('/admin/spareparts'),
+  getTechnicianAll: () => api.get('/technician/spareparts'),
   getById: (id) => api.get(`/admin/spareparts/${id}`),
   create: (data) => api.post('/admin/spareparts', data),
   update: (id, data) => api.put(`/admin/spareparts/${id}`, data),
